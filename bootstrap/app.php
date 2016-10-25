@@ -41,6 +41,8 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
+$app->singleton('App\Toggl\Helper', 'App\Toggl\Helper');
+
 /*
 |--------------------------------------------------------------------------
 | Return The Application
