@@ -6,9 +6,10 @@ use \App\Toggl;
 
 class TogglController extends Controller
 {
-    public function test(Toggl\ApiHelper $oHelper, Request $oRequest)
+    public function test(Toggl\TimeEntries $oHelper, Request $oRequest)
     {
-        $aTimeEntries = $oHelper->getTimeEntries();
+        $aTimeEntries = $oHelper->getEntriesByProject();
+        echo "<pre>";
         print_r($aTimeEntries);
     }
 }
