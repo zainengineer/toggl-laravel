@@ -15,4 +15,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('test', 'TogglController@test');
+Route::get('lastWeek', 'TogglController@lastWeek');

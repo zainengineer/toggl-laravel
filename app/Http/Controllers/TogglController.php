@@ -8,7 +8,7 @@ class TogglController extends Controller
 {
     protected $iMondayToleranceHours = 72;
 
-    public function test(Toggl\TimeEntries $oHelper, Request $oRequest)
+    public function lastWeek(Toggl\TimeEntries $oHelper, Request $oRequest)
     {
         $aTimeEntries = $oHelper->getEntriesByProject();
 //        echo "<pre>";
@@ -53,7 +53,9 @@ class TogglController extends Controller
                         $fTicketTotal += $fDuration;
                         $aDayGrandTotal[$vDate] += $fDuration;
                         $fWeekGrandTotal += $fDuration;
-                        echo "      $fDuration  {$aSingleTimeEntry['description']} \n";
+                        $vHours = ($fDuration >=1) ? floor($fDuration) . ''   : '0';
+                        $vMinute = round(($fDuration - floor($fDuration)) * 60,0);
+                        echo "      $fDuration\t{$vHours}:{$vMinute}\t{$aSingleTimeEntry['description']} \n";
                     }
                     if (abs($fDuration - $fTicketTotal) > 0.0001) {
                         echo "    $fTicketTotal\n";
