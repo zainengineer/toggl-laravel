@@ -84,4 +84,15 @@ class TogglController extends Controller
         }
         return date('Y-m-d', $fLastMonday);
     }
+    public function entry(Toggl\ApiHelper $oHelper, Request $oRequest)
+    {
+        $vToggleApi = $oRequest->input('toggl_api')? : $oRequest->cookie('toggl_api');
+        $_ENV['TOGGL_API_KEY'] = $vToggleApi ? : $_ENV['TOGGL_API_KEY'];
+        if ($_ENV['TOGGL_API_KEY'] && $oHelper->isValidKey()){
+            setcookie('toggl_api', $vToggleApi, time() + (86400 * 30 * 24), "/"); // 86400 = 1 day
+            header('Location: /lastWeek?enable_cache=1');
+            exit;
+        }
+        echo view('cookie')->render();
+    }
 }

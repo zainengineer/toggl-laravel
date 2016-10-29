@@ -11,6 +11,10 @@ class ApiHelper
     public function __construct()
     {
         $this->bEnableCache = isset($_GET['enable_cache']) ? $_GET['enable_cache'] : true;
+        $this->resetClient();
+    }
+    Public function resetClient()
+    {
         $vTogglApiKey = $this->getKey();
         $this->oClient = \AJT\Toggl\TogglClient::factory(['api_key' => $vTogglApiKey]);
     }
@@ -26,8 +30,18 @@ class ApiHelper
         }
         return $aTimeList;
     }
+    public function isValidKey()
+    {
+        try {
+            $this->resetClient();
+            $this->oClient->getClients();
+        } catch(\Exception $e){
+            return false;
+        }
+        return true;
+    }
     protected function getKey()
     {
-        return $_ENV['TOGGLE_API_KEY'];
+        return @$_COOKIE['toggl_api'] ? : @$_ENV['TOGGL_API_KEY'];
     }
 }

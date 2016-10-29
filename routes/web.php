@@ -11,8 +11,11 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('laravel', function () {
     return view('welcome');
 });
+
+Route::get('/', 'TogglController@entry');
+Route::post('/', 'TogglController@entry');
 
 Route::get('lastWeek', 'TogglController@lastWeek');
