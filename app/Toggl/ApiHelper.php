@@ -10,7 +10,7 @@ class ApiHelper
 
     public function __construct()
     {
-        $this->bEnableCache = empty($_GET['disable_cache']);
+        $this->bEnableCache = isset($_GET['enable_cache']) ? $_GET['enable_cache'] : true;
         $vTogglApiKey = $this->getKey();
         $this->oClient = \AJT\Toggl\TogglClient::factory(['api_key' => $vTogglApiKey]);
     }
