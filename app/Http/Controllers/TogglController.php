@@ -10,7 +10,14 @@ class TogglController extends Controller
 
     public function lastWeek(Toggl\TimeEntries $oHelper, Request $oRequest)
     {
-        $aTimeEntries = $oHelper->getEntriesByProject();
+        try {
+            $aTimeEntries = $oHelper->getEntriesByProject();
+        }catch (\Guzzle\Http\Exception\BadResponseException $e){
+            if ($e->getResponse()->getStatusCode() == 403){
+                return redirect()->route('askApiToken');
+            }
+            throw $e;
+        }
 //        echo "<pre>";
 //        print_r($aTimeEntries);
         $this->displayTimeEntries($aTimeEntries);
@@ -84,15 +91,16 @@ class TogglController extends Controller
         }
         return date('Y-m-d', $fLastMonday);
     }
-    public function entry(Toggl\ApiHelper $oHelper, Request $oRequest)
+    public function entry(Toggl\ApiHelper $oHelper, Request $oRequest,\Illuminate\Http\Response $oResponse)
     {
         $vToggleApi = $oRequest->input('toggl_api')? : $oRequest->cookie('toggl_api');
         $_ENV['TOGGL_API_KEY'] = $vToggleApi ? : @$_ENV['TOGGL_API_KEY'];
         if ($_ENV['TOGGL_API_KEY'] && $oHelper->isValidKey()){
-            setcookie('toggl_api', $vToggleApi, time() + (86400 * 30 * 24), "/"); // 86400 = 1 day
-            header('Location: /lastWeek?enable_cache=1');
-            exit;
+            $oCookie = cookie('toggl_api', $vToggleApi, time() + (86400 * 30 * 24));
+            $oResponse->cookie($oCookie);
+            return redirect()->route('lastWeekRoute',['enable_cache' => 1])->withCookie($oCookie);
+
         }
-        echo view('cookie')->render();
+        return view('cookie')->render();
     }
 }

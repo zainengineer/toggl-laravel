@@ -15,7 +15,7 @@ Route::get('laravel', function () {
     return view('welcome');
 });
 
-Route::get('/', 'TogglController@entry');
+Route::get('/', 'TogglController@entry')->name('askApiToken');
 Route::post('/', 'TogglController@entry');
 
-Route::get('lastWeek', 'TogglController@lastWeek');
+Route::get('lastWeek', 'TogglController@lastWeek')->name('lastWeekRoute');

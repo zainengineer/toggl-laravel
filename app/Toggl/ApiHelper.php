@@ -7,10 +7,13 @@ class ApiHelper
     protected $bEnableCache;
     /** @var static \AJT\Toggl\TogglClient */
     protected $oClient;
+    /** @var \Illuminate\Http\Request \Illuminate\Http\Request */
+    protected $oRequest;
 
-    public function __construct()
+    public function __construct(\Illuminate\Http\Request $oRequest)
     {
         $this->bEnableCache = isset($_GET['enable_cache']) ? $_GET['enable_cache'] : true;
+        $this->oRequest = $oRequest;
         $this->resetClient();
     }
     Public function resetClient()
@@ -42,6 +45,6 @@ class ApiHelper
     }
     protected function getKey()
     {
-        return @$_COOKIE['toggl_api'] ? : @$_ENV['TOGGL_API_KEY'];
+        return $this->oRequest->cookie('toggl_api') ? : @$_ENV['TOGGL_API_KEY'];
     }
 }
