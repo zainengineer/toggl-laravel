@@ -24,7 +24,11 @@ class TimeEntries
             $vProjectName = $aMeta['project'];
             $iTicket = $aMeta['ticket'];
             $vDate = date('d-M-Y', strtotime($aTime['start']));
-            $fDuration = round($aTime['duration'] / 60 / 60, 2);
+            $fDuration = $this->secondsToHours($aTime['duration']);
+            if ($fDuration < 0) {
+                //task is running
+                $fDuration = $this->secondsToHours((time() - strtotime($aTime['start'])));
+            }
 
             $aReturn[$vProjectName][$iTicket][$vDate][] = [
                 'description' => $vDescription,
@@ -82,5 +86,8 @@ class TimeEntries
             }
         }
         return $aMeta;
+    }
+    protected function secondsToHours($fSeconds){
+        return round($fSeconds / 60 / 60,2);
     }
 }

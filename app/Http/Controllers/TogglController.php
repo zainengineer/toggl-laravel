@@ -6,7 +6,7 @@ use \App\Toggl;
 
 class TogglController extends Controller
 {
-    protected $iMondayToleranceHours = 72;
+    protected $iDefaultMondayToleranceHours = 72;
 
     public function lastWeek(Toggl\TimeEntries $oHelper, Request $oRequest)
     {
@@ -62,6 +62,7 @@ class TogglController extends Controller
                         $fWeekGrandTotal += $fDuration;
                         $vHours = ($fDuration >=1) ? floor($fDuration) . ''   : '0';
                         $vMinute = round(($fDuration - floor($fDuration)) * 60,0);
+                        $vMinute = str_pad($vMinute, 2, "0", STR_PAD_LEFT);
                         echo "      $fDuration\t{$vHours}:{$vMinute}\t{$aSingleTimeEntry['description']} \n";
                     }
                     if (abs($fDuration - $fTicketTotal) > 0.0001) {
@@ -77,16 +78,20 @@ class TogglController extends Controller
         echo trim($vContents);
         echo "\n\n";
         foreach ($aDayGrandTotal as $vDate => $fDuration) {
-            echo "$vDate\t\t$fDuration\n";
+            $vDuration = number_format($fDuration,2);
+            echo "$vDate\t\t$vDuration\n";
         }
         echo "\nWeek GrandTotal\t\t" . $fWeekGrandTotal;
     }
 
     public function getClosestMonday()
     {
+        if (!empty($_GET['today'])){
+            return date('Y-m-d');
+        }
         $fLastMonday = strtotime('last Monday');
         $fDiff = abs($fLastMonday - time()) / 60 / 60;
-        if ($fDiff < $this->iMondayToleranceHours) {
+        if ($fDiff < $this->getMondayTolerance()) {
             $fLastMonday = $fLastMonday - (7 * 24 * 60 * 60);
         }
         return date('Y-m-d', $fLastMonday);
@@ -98,9 +103,17 @@ class TogglController extends Controller
         if ($_ENV['TOGGL_API_KEY'] && $oHelper->isValidKey()){
             $oCookie = cookie('toggl_api', $vToggleApi, time() + (86400 * 30 * 24));
             $oResponse->cookie($oCookie);
-            return redirect()->route('lastWeekRoute',['enable_cache' => 1])->withCookie($oCookie);
+            return redirect()->route('lastWeekRoute',[
+                'enable_cache' => 1,
+                'hours_tolerance' => 72,
+                'today' => 0,
+            ])->withCookie($oCookie);
 
         }
         return view('cookie')->render();
+    }
+    protected function getMondayTolerance()
+    {
+        return isset($_GET['hours_tolerance']) ? $_GET['hours_tolerance'] : $this->iDefaultMondayToleranceHours;
     }
 }
