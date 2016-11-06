@@ -8,6 +8,15 @@ class TogglController extends Controller
 {
     protected $iDefaultMondayToleranceHours = 72;
 
+    /**
+     * @return Request
+     */
+    protected function getRequest()
+    {
+        /** @var Request $oRequest */
+        $oRequest =  resolve('Illuminate\Http\Request');
+        return $oRequest;
+    }
     public function lastWeek(Toggl\TimeEntries $oHelper, Request $oRequest)
     {
         try {
@@ -22,9 +31,28 @@ class TogglController extends Controller
 //        print_r($aTimeEntries);
         $this->displayTimeEntries($aTimeEntries, $oHelper);
     }
+    protected function topLinks()
+    {
 
+    }
+    protected function getCacheToggleLink()
+    {
+        $oRequest = $this->getRequest();
+        //TODO: find a way to get request parameter from Laravel Objects
+        $aParam = $_GET;
+        $bEnableCache = empty($aParam['enable_cache']);
+        $aParam['enable_cache'] = $bEnableCache ? 1 :0;
+        $vUrl = http_build_query($aParam);
+        $vUrl =  $oRequest->getPathInfo() . "?$vUrl";
+        $vTitle = $bEnableCache ?  "Enable Cache" : "Disable Cache";
+        $vLink = "<a href='$vUrl'>$vTitle</a>";
+        return $vLink;
+
+    }
     protected function displayTimeEntries($aPersonInfo, Toggl\TimeEntries $oHelper)
     {
+        $vLink = $this->getCacheToggleLink();
+        echo "$vLink<br/>\n";
         $aDayGrandTotal = [];
         $fWeekGrandTotal = 0;
         $vClosestMonday = $this->getClosestMonday();
