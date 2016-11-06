@@ -20,10 +20,10 @@ class TogglController extends Controller
         }
 //        echo "<pre>";
 //        print_r($aTimeEntries);
-        $this->displayTimeEntries($aTimeEntries);
+        $this->displayTimeEntries($aTimeEntries, $oHelper);
     }
 
-    protected function displayTimeEntries($aPersonInfo)
+    protected function displayTimeEntries($aPersonInfo, Toggl\TimeEntries $oHelper)
     {
         $aDayGrandTotal = [];
         $fWeekGrandTotal = 0;
@@ -34,7 +34,7 @@ class TogglController extends Controller
         foreach ($aPersonInfo as $vProjectName => $aProjectInfo) {
             $bShowProject = true;
             foreach ($aProjectInfo as $ticket => $aTicketEntries) {
-                $vTicket = is_numeric($ticket) ? $ticket : 'No Ticket';
+                $vTicket =  $oHelper->isTicket($ticket) ? $ticket : 'No Ticket';
                 $bShowTicket = true;
                 foreach ($aTicketEntries as $vDate => $aTimeEntries) {
                     if (strtotime($vDate) < $fClosestMonday) {

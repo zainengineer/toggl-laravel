@@ -10,7 +10,10 @@ class TimeEntries
     {
         $this->oApiHelper = $oHelper;
     }
-
+    public function isTicket($vTicket)
+    {
+        return (strpos($vTicket, '#') === 0);
+    }
     public function getEntriesByProject()
     {
         $aTimeEntries = $this->oApiHelper->getTimeEntries();
@@ -51,8 +54,8 @@ class TimeEntries
             $aReturn[$vProject] = $aProject;
             if ((count($aProject) == 1) && (count(current($aProject)) == 1 )) {
                 $vDate = key(current($aProject));
-                $iTicket = key($aProject);
-                if (!is_numeric($iTicket)) {
+                $vTicket = key($aProject);
+                if (!$this->isTicket($vTicket)) {
                     unset($aReturn[$vProject]);
                     //all misc/project time entries will be grouped already under it, only once
                     if (!isset($aReturn['misc'][$vProject])){
@@ -79,9 +82,10 @@ class TimeEntries
         $aMeta = [];
         $aParts = explode(' ', $vDescription);
         $aMeta['ticket'] = $aMeta['project'] = strtolower($aParts[0]) ?: 'no_project';
+        //remove # from ticket number
         foreach ($aParts as $vPart) {
-            if (strpos($vPart, '#') === 0) {
-                $aMeta['ticket'] = (int)trim($vPart, '#');
+            if ($this->isTicket($vPart)) {
+                $aMeta['ticket'] = $vPart;
                 break;
             }
         }
