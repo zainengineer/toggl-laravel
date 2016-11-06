@@ -102,6 +102,7 @@ class TogglController extends Controller
             }
             echo "\n";
         }
+        ksort($aDayGrandTotal);
         $vContents = ob_get_clean();
         echo trim($vContents);
         echo "\n\n";
