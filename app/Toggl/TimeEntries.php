@@ -10,10 +10,15 @@ class TimeEntries
     {
         $this->oApiHelper = $oHelper;
     }
+
     public function isTicket($vTicket)
     {
-        return (strpos($vTicket, '#') === 0);
+        return ((strpos($vTicket, '#') === 0
+            || is_numeric($vTicket)
+            || strpos($vTicket, '-')
+        );
     }
+
     public function getEntriesByProject()
     {
         $aTimeEntries = $this->oApiHelper->getTimeEntries();
@@ -34,12 +39,12 @@ class TimeEntries
             }
 
             $aReturn[$vProjectName][$iTicket][$vDate][] = [
-                'description' => $vDescription,
-                'ticket'      => $iTicket,
-                'project'     => $vProjectName,
-                'duration'    => $fDuration,
-                'date'        => $vDate,
-                'actual_start'        => $aTime['start'],
+                'description'  => $vDescription,
+                'ticket'       => $iTicket,
+                'project'      => $vProjectName,
+                'duration'     => $fDuration,
+                'date'         => $vDate,
+                'actual_start' => $aTime['start'],
             ];
         }
         $aReturn = $this->mergeNonProjects($aReturn);
@@ -52,16 +57,16 @@ class TimeEntries
         foreach ($aEntries as $vProject => $aProject) {
             $vProject = ($vProject == 'misc') ? 'misc_project' : $vProject;
             $aReturn[$vProject] = $aProject;
-            if ((count($aProject) == 1) && (count(current($aProject)) == 1 )) {
+            if ((count($aProject) == 1) && (count(current($aProject)) == 1)) {
                 $vDate = key(current($aProject));
                 $vTicket = key($aProject);
                 if (!$this->isTicket($vTicket)) {
                     unset($aReturn[$vProject]);
                     //all misc/project time entries will be grouped already under it, only once
-                    if (!isset($aReturn['misc'][$vProject])){
+                    if (!isset($aReturn['misc'][$vProject])) {
                         $aReturn['misc'][$vProject] = [];
                     }
-                    if (!isset($aProject['misc'][$vProject][$vDate])){
+                    if (!isset($aProject['misc'][$vProject][$vDate])) {
                         $aReturn['misc'][$vProject][$vDate] = [];
                     }
                     $aReturn['misc'][$vProject][$vDate] = $aProject[$vProject][$vDate];
@@ -91,7 +96,9 @@ class TimeEntries
         }
         return $aMeta;
     }
-    protected function secondsToHours($fSeconds){
-        return round($fSeconds / 60 / 60,2);
+
+    protected function secondsToHours($fSeconds)
+    {
+        return round($fSeconds / 60 / 60, 2);
     }
 }
