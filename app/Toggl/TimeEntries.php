@@ -16,7 +16,7 @@ class TimeEntries
         return ((strpos($vTicket, '#') === 0
             || is_numeric($vTicket)
             || strpos($vTicket, '-')
-        );
+        ));
     }
 
     public function getEntriesByProject()
