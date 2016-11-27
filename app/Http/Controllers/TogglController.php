@@ -94,7 +94,8 @@ class TogglController extends Controller
                         echo "      $fDuration\t{$vHours}:{$vMinute}\t{$aSingleTimeEntry['description']} \n";
                     }
                     if (abs($fDuration - $fTicketTotal) > 0.0001) {
-                        echo "    $fTicketTotal\n";
+                        $vJiraTime = $oHelper->getJiraTime($fTicketTotal);
+                        echo "    $fTicketTotal\t$vJiraTime\n";
                     }
                     echo "\n";
                 }

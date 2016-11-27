@@ -32,17 +32,20 @@ class TimeEntries
             $vProjectName = $aMeta['project'];
             $iTicket = $aMeta['ticket'];
             $vDate = date('d-M-Y', strtotime($aTime['start']));
-            $fDuration = $this->secondsToHours($aTime['duration']);
-            if ($fDuration < 0) {
+            $fSeconds = $aTime['duration'];
+            if ($fSeconds < 0) {
                 //task is running
-                $fDuration = $this->secondsToHours((time() - strtotime($aTime['start'])));
+                $fSeconds = (time() - strtotime($aTime['start']));
             }
+
+            $fDuration = $this->secondsToHours($fSeconds);
 
             $aReturn[$vProjectName][$iTicket][$vDate][] = [
                 'description'  => $vDescription,
                 'ticket'       => $iTicket,
                 'project'      => $vProjectName,
                 'duration'     => $fDuration,
+                'jira_time'    => $this->getJiraTime($fSeconds),
                 'date'         => $vDate,
                 'actual_start' => $aTime['start'],
             ];
@@ -100,5 +103,14 @@ class TimeEntries
     protected function secondsToHours($fSeconds)
     {
         return round($fSeconds / 60 / 60, 2);
+    }
+
+    public function getJiraTime($fHours)
+    {
+        $iHour = floor($fHours);
+        $vHour = $iHour ? $iHour . 'h' : '';
+        $iMinutes = round(($fHours - $iHour) * 60, 0);
+        $vMinute = $iMinutes ? $iMinutes . 'm' : '';
+        return "$vHour $vMinute";
     }
 }
