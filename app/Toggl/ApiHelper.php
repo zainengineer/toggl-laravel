@@ -22,13 +22,22 @@ class ApiHelper
         $this->oClient = \AJT\Toggl\TogglClient::factory(['api_key' => $vTogglApiKey]);
     }
 
-    public function getTimeEntries()
+    public function getTimeEntries($vStartDate, $vEndDate)
     {
 //        $expiresAt = \Carbon\Carbon::now()->addMinutes(10);
         $vCacheKey = 'time_entries_' . $this->getKey();
+        $vCacheKey.= '-' . $vStartDate . '-' . $vEndDate;
         $aTimeList = Cache::get($vCacheKey);
         if (!$aTimeList || !$this->bEnableCache){
-            $aTimeList = $this->oClient->getTimeEntries(array());
+            //$aTimeList = $this->oClient->getTimeEntries(array());
+            $aParam = [];
+            if ($vStartDate){
+                $aParam['start_date'] = $vStartDate;
+            }
+            if ($vEndDate){
+                $aParam['end_date'] = $vEndDate;
+            }
+            $aTimeList = $this->oClient->getTimeEntries($aParam);
             Cache::put($vCacheKey,$aTimeList,20);
         }
         return $aTimeList;

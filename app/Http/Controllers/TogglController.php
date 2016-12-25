@@ -8,6 +8,7 @@ use Illuminate\Pagination\Paginator;
 class TogglController extends Controller
 {
     protected $iDefaultMondayToleranceHours = 72;
+    protected $oTimeHelper;
 
     /**
      * @return Request
@@ -19,9 +20,21 @@ class TogglController extends Controller
         return $oRequest;
     }
 
-    public function lastWeek(Toggl\TimeEntries $oHelper, Request $oRequest)
+    /**
+     * @return Toggl\TimeEntries
+     */
+    protected function getTimeEntriesHelper()
+    {
+        if (!$this->oTimeHelper){
+            $this->oTimeHelper = resolve('\App\Toggl\TimeEntries');
+        }
+        return $this->oTimeHelper;
+    }
+
+    public function lastWeek(Request $oRequest)
     {
         try {
+            $oHelper = $this->getTimeEntriesHelper();
             $aTimeEntries = $oHelper->getEntriesByProject();
         } catch (\Guzzle\Http\Exception\BadResponseException $e) {
             if ($e->getResponse()->getStatusCode() == 403) {
@@ -124,8 +137,9 @@ class TogglController extends Controller
 
     public function getClosestMondayStamp()
     {
-        if (!empty($_GET['today'])) {
-            return date('Y-m-d');
+        $vStartDate = $this->getTimeEntriesHelper()->getStartDate();
+        if ($vStartDate) {
+            return strtotime($vStartDate);
         }
         $fLastMonday = strtotime('last Monday');
         $fDiff = abs($fLastMonday - time()) / 60 / 60;

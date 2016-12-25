@@ -1,14 +1,20 @@
 <?php
 namespace App\Toggl;
+use Illuminate\Http\Request;
 
 class TimeEntries
 {
     /** @var  ApiHelper */
     protected $oApiHelper;
+    /** @var  Request */
+    protected $oRequest;
 
-    public function __construct(ApiHelper $oHelper)
+
+    public function __construct(ApiHelper $oHelper
+        , Request $oRequest)
     {
         $this->oApiHelper = $oHelper;
+        $this->oRequest = $oRequest;
     }
 
     public function isTicket($vTicket)
@@ -18,10 +24,37 @@ class TimeEntries
             || strpos($vTicket, '-')
         ));
     }
+    public function getStartDate()
+    {
+        static $vStartDate;
+        if ($vStartDate){
+            return $vStartDate;
+        }
+        $vStartDate = $this->oRequest->get('start_date');
+        if (!$vStartDate &&  $this->oRequest->get('today')){
+            $vStartDate = date('Y-m-d');
+        }
+        if ($vStartDate){
+            $vStartDate = date('c',strtotime($vStartDate));
+        }
+        return $vStartDate;
+    }
+    public function getEndDate()
+    {
+        static $vEndDate;
+        if ($vEndDate){
+            return $vEndDate;
+        }
+        $vEndDate= $this->oRequest->get('end_date');
+        if ($vEndDate){
+            $vEndDate = date('c',strtotime($vEndDate));
+        }
+        return $vEndDate;
+    }
 
     public function getEntriesByProject()
     {
-        $aTimeEntries = $this->oApiHelper->getTimeEntries();
+        $aTimeEntries = $this->oApiHelper->getTimeEntries($this->getStartDate(),$this->getEndDate());
         $aReturn = [];
         foreach ($aTimeEntries as $aTime) {
             if (!isset($aTime['description'])) {
