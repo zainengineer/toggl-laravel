@@ -16,7 +16,8 @@
     </head>
     <body>
         <div>
-            No valid API code found, please provide API code
+            No valid API code fotund, please provide API code <br/>
+            Get it from your <a href="https://toggl.com/app/profile">profile</a>
             <form action="." method="post" style="margin: 0; padding: 0;">
                 Toggle API: <input type="text" name="toggl_api" />
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
