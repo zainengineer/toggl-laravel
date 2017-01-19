@@ -9,6 +9,7 @@ class TogglController extends Controller
 {
     protected $iDefaultMondayToleranceHours = 72;
     protected $oTimeHelper;
+    protected $iCachedLastMonday;
 
     /**
      * @return Request
@@ -25,7 +26,7 @@ class TogglController extends Controller
      */
     protected function getTimeEntriesHelper()
     {
-        if (!$this->oTimeHelper){
+        if (!$this->oTimeHelper) {
             $this->oTimeHelper = resolve('\App\Toggl\TimeEntries');
         }
         return $this->oTimeHelper;
@@ -47,30 +48,85 @@ class TogglController extends Controller
         $this->displayTimeEntries($aTimeEntries, $oHelper);
     }
 
-    protected function topLinks()
+    protected function getCacheToggleLink()
     {
+        $aParam = [];
+        $bEnableCache = empty($_GET['enable_cache']);
+        $aParam['enable_cache'] = $bEnableCache ? 1 : 0;
+        $vTitle = $bEnableCache ? "Enable Cache" : "Disable Cache";
+        $vLink = $this->replaceGetParametersLink($aParam, $vTitle);
+        return $vLink;
 
     }
 
-    protected function getCacheToggleLink()
+    protected function replaceGetParametersLink($aParamValue, $vTitle)
     {
-        $oRequest = $this->getRequest();
-        //TODO: find a way to get request parameter from Laravel Objects
-        $aParam = $_GET;
-        $bEnableCache = empty($aParam['enable_cache']);
-        $aParam['enable_cache'] = $bEnableCache ? 1 : 0;
-        $vUrl = http_build_query($aParam);
-        $vUrl = $oRequest->getPathInfo() . "?$vUrl";
-        $vTitle = $bEnableCache ? "Enable Cache" : "Disable Cache";
+        $vUrl = $this->replaceGetParametersUrl($aParamValue);
         $vLink = "<a href='$vUrl'>$vTitle</a>";
         return $vLink;
+    }
+
+    protected function replaceGetParametersUrl($aParamValue)
+    {
+        $oRequest = $this->getRequest();
+        $aParam = $_GET;
+        foreach ($aParamValue as $vParamName => $vParamValue) {
+            if (is_null($vParamValue)){
+                unset($aParam[$vParamName]);
+            }
+            else{
+                $aParam[$vParamName] = $vParamValue;
+            }
+        }
+        $vUrl = http_build_query($aParam);
+        //TODO: find a way to get request parameter from Laravel Objects
+        $vUrl = $oRequest->getPathInfo() . "?$vUrl";
+        return $vUrl;
+    }
+
+    protected function getPreviousWeekLink()
+    {
+        $iPreviousWeek = $this->getPreviousMondayStamp();
+        $vPreviousWeek = date($this->getDateFormatForRequest(), $iPreviousWeek);
+        $aParam = ['start_date' => $vPreviousWeek];
+        $iEndDate = $iPreviousWeek + 7 * 24 * 60 * 60;
+        $aParam['end_date'] = null;
+        if (($iEndDate) < time()) {
+            $aParam['end_date'] = date($this->getDateFormatForRequest(), $iEndDate);
+        }
+        return $this->replaceGetParametersLink($aParam, 'Previous Week');
+    }
+
+    protected function getNextWeekLink()
+    {
+        $iNextWeek = $this->getNextMondayStamp();
+        if ($iNextWeek) {
+            $vPreviousWeek = date($this->getDateFormatForRequest(), $iNextWeek);
+            $aParam = ['start_date' => $vPreviousWeek];
+            $iEndDate = $iNextWeek + 7 * 24 * 60 * 60;
+            $aParam['end_date'] = null;
+            if ($iEndDate < time()){
+                $aParam['end_date'] = date($this->getDateFormatForRequest(), $iEndDate);
+            }
+            return $this->replaceGetParametersLink($aParam, 'Next Week');
+        }
+    }
+
+    protected function showHeaderLink()
+    {
+        $aLinks = [
+            $this->getCacheToggleLink(),
+            $this->getPreviousWeekLink(),
+            $this->getNextWeekLink(),
+        ];
+        $vLinks = implode("<br/>\n", $aLinks);
+        echo $vLinks;
 
     }
 
     protected function displayTimeEntries($aPersonInfo, Toggl\TimeEntries $oHelper)
     {
-        $vLink = $this->getCacheToggleLink();
-        echo "$vLink<br/>\n";
+        $this->showHeaderLink();
         $aDayGrandTotal = [];
         $fWeekGrandTotal = 0;
         $fClosestMonday = $this->getClosestMondayStamp();
@@ -130,22 +186,43 @@ class TogglController extends Controller
         echo "\n\n";
         foreach ($aDayGrandTotal as $vDate => $fDuration) {
             $vDuration = number_format($fDuration, 2);
-            echo "$vDate\t\t$vDuration\n";
+            $vDateFormatted = date('D d-M', strtotime($vDate));
+            echo "$vDateFormatted\t\t$vDuration\n";
         }
         echo "\nWeek GrandTotal\t\t" . $fWeekGrandTotal;
     }
 
+    public function getPreviousMondayStamp()
+    {
+        $iClosestMonday = $this->getClosestMondayStamp();
+        return $iClosestMonday - (7 * 24 * 60 * 60);
+    }
+
+    public function getNextMondayStamp()
+    {
+        $iClosestMonday = $this->getClosestMondayStamp();
+        $iNextMonday = $iClosestMonday + (7 * 24 * 60 * 60);
+        if ($iNextMonday < time()) {
+            return $iNextMonday;
+        }
+    }
+
     public function getClosestMondayStamp()
     {
+        if ($this->iCachedLastMonday) {
+            return $this->iCachedLastMonday;
+        }
         $vStartDate = $this->getTimeEntriesHelper()->getStartDate();
         if ($vStartDate) {
-            return strtotime($vStartDate);
+            $this->iCachedLastMonday = strtotime($vStartDate);
+            return $this->iCachedLastMonday;
         }
         $fLastMonday = strtotime('last Monday');
         $fDiff = abs($fLastMonday - time()) / 60 / 60;
         if ($fDiff < $this->getMondayTolerance()) {
             $fLastMonday = $fLastMonday - (7 * 24 * 60 * 60);
         }
+        $this->iCachedLastMonday = $fLastMonday;
         return $fLastMonday;
     }
 
@@ -159,8 +236,8 @@ class TogglController extends Controller
         if ($fMondayAgo < (7 + $this->getSundayTolerance())) {
             return null;
         }
-        $fReturn =$fMonday + (7 * 24 * 60 * 60) -1;
-        $vDate = date('c',$fReturn);
+        $fReturn = $fMonday + (7 * 24 * 60 * 60) - 1;
+        $vDate = date('c', $fReturn);
         return $fReturn;
     }
 
@@ -185,6 +262,11 @@ class TogglController extends Controller
     protected function getMondayTolerance()
     {
         return isset($_GET['hours_tolerance']) ? $_GET['hours_tolerance'] : $this->iDefaultMondayToleranceHours;
+    }
+
+    protected function getDateFormatForRequest()
+    {
+        return 'Y-m-d';
     }
 
     protected function getSundayTolerance()
