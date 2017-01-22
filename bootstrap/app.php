@@ -42,6 +42,8 @@ $app->singleton(
 );
 
 $app->singleton('App\Toggl\Helper', 'App\Toggl\Helper');
+$app->singleton('App\Toggl\ViewHelper', 'App\Toggl\ViewHelper');
+
 
 /*
 |--------------------------------------------------------------------------

@@ -26,10 +26,15 @@ Connect Url: <input class="connect_url_input" type="text" name="connect_url" />
             this.JInput.val(valueInCookie);
             this.sourceConnect(valueInCookie);
         }
+        $('.post-data-send').click(this.sendData);
 
         this.binded = true;
     };
 
+    DomainConnect.sendData = function(event){
+        var data = jQuery(event.target).data('post');
+        this.sendMessage(data);
+    };
     DomainConnect.getInput = function (){
         if (!this.binded){
             throw new Error('not binded yet');

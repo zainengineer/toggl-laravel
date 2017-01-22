@@ -10,6 +10,11 @@ class TogglController extends Controller
     protected $iDefaultMondayToleranceHours = 72;
     protected $oTimeHelper;
     protected $iCachedLastMonday;
+    protected $oViewHelper;
+    public function __construct(Toggl\ViewHelper $oViewHelper)
+    {
+        $this->oViewHelper = $oViewHelper;
+    }
 
     /**
      * @return Request
@@ -169,11 +174,11 @@ class TogglController extends Controller
                         $vHours = ($fDuration >= 1) ? floor($fDuration) . '' : '0';
                         $vMinute = round(($fDuration - floor($fDuration)) * 60, 0);
                         $vMinute = str_pad($vMinute, 2, "0", STR_PAD_LEFT);
-                        echo "      $fDuration\t{$vHours}:{$vMinute}\t{$aSingleTimeEntry['description']} \n";
+                        echo "      $fDuration\t{$vHours}:{$vMinute}\t{$aSingleTimeEntry['description']} {$this->oViewHelper->getTimeLink($aSingleTimeEntry)} \n";
                     }
                     if (abs($fDuration - $fTicketTotal) > 0.0001) {
                         $vJiraTime = $oHelper->getJiraTime($fTicketTotal);
-                        echo "    $fTicketTotal\t$vJiraTime\n";
+                        echo "    $fTicketTotal\t$vJiraTime \n";
                     }
                     echo "\n";
                 }
