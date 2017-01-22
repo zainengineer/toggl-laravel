@@ -1,6 +1,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.3/js.cookie.min.js"></script>
-<iframe style="display:none" src="." id="iframe_message" style="height:60px"></iframe>
+<iframe style="display:none"  id="iframe_message" style="height:60px"></iframe>
 Connect Url: <input class="connect_url_input" type="text" name="connect_url" />
 <input class="connect-submit" type="submit"/>
 <script>
