@@ -35,6 +35,7 @@ class TogglController extends Controller
     public function lastWeek(Request $oRequest)
     {
         try {
+            echo view('domain_connect')->render();
             $oHelper = $this->getTimeEntriesHelper();
             $aTimeEntries = $oHelper->getEntriesByProject();
         } catch (\Guzzle\Http\Exception\BadResponseException $e) {
