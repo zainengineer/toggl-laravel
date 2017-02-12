@@ -171,14 +171,19 @@ class TogglController extends Controller
                         $fTicketTotal += $fDuration;
                         $aDayGrandTotal[$vDate] += $fDuration;
                         $fWeekGrandTotal += $fDuration;
-                        $vHours = ($fDuration >= 1) ? floor($fDuration) . '' : '0';
-                        $vMinute = round(($fDuration - floor($fDuration)) * 60, 0);
-                        $vMinute = str_pad($vMinute, 2, "0", STR_PAD_LEFT);
-                        echo "      $fDuration\t{$vHours}:{$vMinute}\t{$aSingleTimeEntry['description']} {$this->oViewHelper->getTimeLink($aSingleTimeEntry)} \n";
+                        $vJiraSingleTime = $oHelper->getJiraTime($fDuration,true);
+                        echo "      $fDuration\t$vJiraSingleTime \t{$aSingleTimeEntry['description']} {$this->oViewHelper->getTimeLink($aSingleTimeEntry)} \n";
                     }
                     if (abs($fDuration - $fTicketTotal) > 0.0001) {
-                        $vJiraTime = $oHelper->getJiraTime($fTicketTotal);
-                        echo "    $fTicketTotal\t$vJiraTime \n";
+                        $vJiraTime = $oHelper->getJiraTime($fTicketTotal,true);
+                        $vTimeLink = "";
+                        if (!empty($aSingleTimeEntry)){
+                            $aTicketSum  = $aSingleTimeEntry;
+                            $aTicketSum['duration'] = $fTicketTotal;
+                            $aTicketSum['jira_time'] = $oHelper->getJiraTime($fTicketTotal,false);
+                            $vTimeLink = $this->oViewHelper->getTimeLink($aTicketSum);
+                        }
+                        echo "    $fTicketTotal\t$vJiraTime $vTimeLink \n";
                     }
                     echo "\n";
                 }

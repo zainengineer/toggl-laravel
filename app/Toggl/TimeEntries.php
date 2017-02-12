@@ -78,7 +78,7 @@ class TimeEntries
                 'ticket'       => $iTicket,
                 'project'      => $vProjectName,
                 'duration'     => $fDuration,
-                'jira_time'    => $this->getJiraTime($fSeconds),
+                'jira_time'    => $this->getJiraTime($fSeconds,false),
                 'date'         => $vDate,
                 'actual_start' => $aTime['start'],
             ];
@@ -138,12 +138,18 @@ class TimeEntries
         return round($fSeconds / 60 / 60, 2);
     }
 
-    public function getJiraTime($fHours)
+    public function getJiraTime($fHours, $bPadding  )
     {
         $iHour = floor($fHours);
         $vHour = $iHour ? $iHour . 'h' : '';
         $iMinutes = round(($fHours - $iHour) * 60, 0);
         $vMinute = $iMinutes ? $iMinutes . 'm' : '';
+        if (!$vHour && $bPadding){
+            if ($iMinutes < 10) {
+                $vMinute = " $vMinute";
+            }
+            return "   $vMinute";
+        }
         return "$vHour $vMinute";
     }
 }
