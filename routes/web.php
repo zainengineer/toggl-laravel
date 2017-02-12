@@ -17,5 +17,6 @@ Route::get('laravel', function () {
 
 Route::get('/', 'TogglController@entry')->name('askApiToken');
 Route::post('/', 'TogglController@entry');
+Route::post('jira', 'TogglController@jiraPost')->name('jiraPost');
 
 Route::get('lastWeek', 'TogglController@lastWeek')->name('lastWeekRoute');

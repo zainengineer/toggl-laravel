@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use \App\Toggl;
 use Illuminate\Pagination\Paginator;
 
+
 class TogglController extends Controller
 {
     protected $iDefaultMondayToleranceHours = 72;
@@ -268,6 +269,21 @@ class TogglController extends Controller
 
         }
         return view('cookie')->render();
+    }
+
+    public function jiraPost(Toggl\JiraHelper $oHelper, Request $oRequest, \Illuminate\Http\Response $oResponse)
+    {
+        $aTicketInfo = $oRequest->input('timer') ;
+        $vIssue = $aTicketInfo['ticket'];
+        $vStartedAt = $aTicketInfo['actual_start'];
+        $vDuration = $aTicketInfo['duration'];
+//        $vComment = $aTicketInfo['comment'];
+        $vComment = $aTicketInfo['description'];
+        $oHelper->addTimeLog($vIssue, $vStartedAt,$vDuration,$vComment );
+        return response()->json([
+            'status' => 'updated',
+        ]);
+
     }
 
     protected function getMondayTolerance()

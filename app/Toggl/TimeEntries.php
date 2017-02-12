@@ -150,6 +150,6 @@ class TimeEntries
             }
             return "   $vMinute";
         }
-        return "$vHour $vMinute";
+        return trim("$vHour $vMinute");
     }
 }
