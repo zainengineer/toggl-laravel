@@ -278,7 +278,7 @@ class TogglController extends Controller
         $vStartedAt = $aTicketInfo['actual_start'];
         $vDuration = $aTicketInfo['duration'];
 //        $vComment = $aTicketInfo['comment'];
-        $vComment = $aTicketInfo['description'];
+        $vComment = empty($aTicketInfo['jira_entry']) ?  $aTicketInfo['description'] : $aTicketInfo['jira_entry'];
         $oHelper->addTimeLog($vIssue, $vStartedAt,$vDuration,$vComment );
         return response()->json([
             'status' => 'updated',

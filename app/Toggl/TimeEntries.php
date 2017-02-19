@@ -72,16 +72,19 @@ class TimeEntries
             }
 
             $fDuration = $this->secondsToHours($fSeconds);
-
-            $aReturn[$vProjectName][$iTicket][$vDate][] = [
+            $aRow = [
                 'description'  => $vDescription,
                 'ticket'       => $iTicket,
                 'project'      => $vProjectName,
                 'duration'     => $fDuration,
-                'jira_time'    => $this->getJiraTime($fSeconds,false),
+                'jira_time'    => $this->getJiraTime($fSeconds, false),
                 'date'         => $vDate,
                 'actual_start' => $aTime['start'],
             ];
+            if (!empty($aMeta['jira_entry'])) {
+                $aRow['jira_entry'] = $aMeta['jira_entry'];
+            }
+            $aReturn[$vProjectName][$iTicket][$vDate][] = $aRow;
         }
         $aReturn = $this->mergeNonProjects($aReturn);
         return $aReturn;
@@ -128,6 +131,14 @@ class TimeEntries
             if ($this->isTicket($vPart)) {
                 $aMeta['ticket'] = $vPart;
                 break;
+            }
+        }
+        $vDescription = trim($vDescription);
+        $vProject = trim($aMeta['project']);
+        if ($vProject) {
+            //remove project prefix from ticket description
+            if (strpos($vDescription, $vProject) === 0) {
+                $aMeta['jira_entry'] = trim(substr($vDescription, strlen($vProject)));
             }
         }
         return $aMeta;
