@@ -77,9 +77,14 @@ class TimeEntries
                 'ticket'       => $iTicket,
                 'project'      => $vProjectName,
                 'duration'     => $fDuration,
-                'jira_time'    => $this->getJiraTime($fSeconds, false),
+                'jira_time'    => $this->getJiraTime($fDuration, false),
                 'date'         => $vDate,
-                'actual_start' => $aTime['start'],
+                /**
+                 * default time zone of the app is Adelaide
+                 * config/app.php:67
+                 */
+                'actual_start' => date('c',strtotime($aTime['start'])),
+                'stop' => date('c',strtotime($aTime['stop'])),
             ];
             if (!empty($aMeta['jira_entry'])) {
                 $aRow['jira_entry'] = $aMeta['jira_entry'];
