@@ -28,6 +28,7 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
             }
         })
     };
+
     DomainConnect = {};
     DomainConnect.cookieName = 'connect_url';
 
@@ -81,6 +82,22 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
 
     JiraConnect = {};
     JiraConnect.cookieName = 'jira_config';
+    JiraConnect.setConfig = function(value){
+        //            Cookies.set(this.cookieName, vJson, { expires: 365 });
+        try {
+            JSON.parse(value);
+            localStorage.setItem(this.cookieName,value);
+        } catch (e) {
+            alert('value is not properly formatted json');
+        }
+    };
+    JiraConnect.getConfig = function(){
+        //        var vJson= Cookies.get(this.cookieName);
+        var vJson =  localStorage.getItem(this.cookieName);
+        if (JSON.parse(vJson)){
+            return vJson;
+        }
+    };
     JiraConnect.bindElements = function() {
         if (this.binded){
             return;
@@ -102,22 +119,13 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
     };
     JiraConnect.saveConfig = function(){
         var vJson = this.$jira_config.val();
-        var oJson = JSON.parse(vJson);
-        if (oJson){
-            Cookies.set(this.cookieName, vJson, { expires: 365 });
-        }
-    };
-    JiraConnect.getConfig = function () {
-        var vJson= Cookies.get(this.cookieName);
-        if (vJson && (JSON.parse(vJson))){
-            return vJson;
-        }
+        this.setConfig(vJson);
     };
     JiraConnect.sendData = function(event){
-        var oTimeEntry = jQuery(event.target).data('timeEntry')
+        var oTimeEntry = jQuery(event.target).data('timeEntry');
         //clicked innert <i>
         if (!oTimeEntry){
-            oTimeEntry = jQuery(event.target).parent().data('timeEntry')
+            oTimeEntry = jQuery(event.target).parent().data('timeEntry');
         }
         var vTimeEntry;
         var ajaxRequest = {
