@@ -149,7 +149,7 @@ class TimeEntries
         $vProject = trim($aMeta['project']);
         if ($vProject) {
             //remove project prefix from ticket description
-            if (strpos($vDescription, $vProject) === 0) {
+            if (stripos($vDescription, $vProject) === 0) {
                 $aMeta['jira_entry'] = trim(substr($vDescription, strlen($vProject)));
             }
         }
