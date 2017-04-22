@@ -71,6 +71,10 @@ class TimeEntries
                 $fSeconds = (time() - strtotime($aTime['start']));
             }
 
+            if (!isset($aTime['stop'])){
+                continue;
+            }
+
             $fDuration = $this->secondsToHours($fSeconds);
             $aRow = [
                 'description'  => $vDescription,
@@ -131,6 +135,9 @@ class TimeEntries
         $aMeta = [];
         $aParts = explode(' ', $vDescription);
         $aMeta['ticket'] = $aMeta['project'] = strtolower($aParts[0]) ?: 'no_project';
+        if (count($aParts) > 2){
+            array_splice($aParts,2);
+        }
         //remove # from ticket number
         foreach ($aParts as $vPart) {
             if ($this->isTicket($vPart)) {
