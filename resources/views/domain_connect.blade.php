@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.css">
 
 <iframe style="display:none"  id="iframe_message" style="height:60px"></iframe>
+<iframe style="display:none"  id="iframe_jira" style="height:60px"></iframe>
 Connect Url: <input class="connect_url_input" type="text" name="connect_url" />
 <input class="connect-submit" type="submit"/>
 <br/>
@@ -17,7 +18,7 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
 <input class="jira-config-submit" value="save jira config" type="submit"/>
 <br/>
 <input class="jira-test-config" value="test jira config" type="submit"/>
-
+<iframe src="https://camillaandmarc.atlassian.net/"></iframe>
 <br/>
 <br/>
 Needs cross header requests enabled
@@ -133,7 +134,7 @@ Needs cross header requests enabled
             return false;
         }
         var oConfig = JSON.parse(config);
-        JiraApi.init(oConfig.base_url,oConfig.auth_key,oConfig.sample_ticket);
+        JiraApi.init(oConfig.base_url,oConfig.auth_key,oConfig.sample_ticket,'iframe_jira');
         return true;
     };
     JiraConnect.saveConfig = function(){
