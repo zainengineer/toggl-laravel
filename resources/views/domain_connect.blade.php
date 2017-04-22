@@ -18,26 +18,16 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
 <input class="jira-config-submit" value="save jira config" type="submit"/>
 <br/>
 <input class="jira-test-config" value="test jira config" type="submit"/>
-<iframe src="https://camillaandmarc.atlassian.net/"></iframe>
-<br/>
-<br/>
-Needs cross header requests enabled
-<a href="https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi/related?utm_source=chrome-app-launcher-info-dialog">cross origin extension</a>
+{{--<br/>--}}
+{{--<br/>--}}
+{{--Needs cross header requests enabled--}}
+{{--<a href="https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi/related?utm_source=chrome-app-launcher-info-dialog">cross origin extension</a>--}}
 <script>
 
 
     $(function(){
         zClipBoardBind = new Clipboard('.clip-board-trigger');
     });
-    ZJsTools = {};
-    ZJsTools.bindAllFunctions = function (object) {
-        Object.getOwnPropertyNames(object).filter(function (p) {
-            var objectFunction = object[p];
-            if (typeof objectFunction === 'function'){
-                object[p] = objectFunction.bind(object);
-            }
-        })
-    };
 
     DomainConnect = {};
     DomainConnect.cookieName = 'connect_url';
@@ -134,7 +124,7 @@ Needs cross header requests enabled
             return false;
         }
         var oConfig = JSON.parse(config);
-        JiraApi.init(oConfig.base_url,oConfig.auth_key,oConfig.sample_ticket,'iframe_jira');
+        JiraApi.init(oConfig.base_url,oConfig.auth_key,oConfig.sample_ticket,'iframe_jira',oConfig.iframe_url);
         return true;
     };
     JiraConnect.saveConfig = function(){
@@ -142,27 +132,28 @@ Needs cross header requests enabled
         this.setConfig(vJson);
     };
     JiraConnect.sendData = function(event){
-        var oTimeEntry = jQuery(event.target).data('timeEntry');
+        let oTimeEntry = jQuery(event.target).data('timeEntry');
         //clicked innert <i>
         if (!oTimeEntry){
             oTimeEntry = jQuery(event.target).parent().data('timeEntry');
         }
-        var vTimeEntry;
-        var ajaxRequest = {
-            method: "POST",
-            url:  "/jira",
-            data: {timer: oTimeEntry}
-        };
-        var jqxhr = $.ajax( ajaxRequest )
-        .done(function() {
-            alert( "success" );
-        })
-        .fail(function() {
-            alert( "error" );
-        })
-        .always(function() {
-//            alert( "complete" );
-        });
+        JiraApi.postTime(oTimeEntry);
+        console.log(oTimeEntry);
+//        var ajaxRequest = {
+//            method: "POST",
+//            url:  "/jira",
+//            data: {timer: oTimeEntry}
+//        };
+//        var jqxhr = $.ajax( ajaxRequest )
+//        .done(function() {
+//            alert( "success" );
+//        })
+//        .fail(function() {
+//            alert( "error" );
+//        })
+//        .always(function() {
+////            alert( "complete" );
+//        });
     };
 
     ZJsTools.bindAllFunctions(JiraConnect);

@@ -6,6 +6,8 @@ class TimeEntries
 {
     /** @var  ApiHelper */
     protected $oApiHelper;
+    /** @var  \App\Toggl\JiraHelper  */
+    protected $oJiraHelper;
     /** @var  Request */
     protected $oRequest;
 
@@ -90,6 +92,7 @@ class TimeEntries
                 'actual_start' => date('c',strtotime($aTime['start'])),
                 'stop' => date('c',strtotime($aTime['stop'])),
             ];
+            $aRow['jira_start'] =$this->getJiraHelper()->jiraRestDateFormat($aRow['actual_start']);
             if (!empty($aMeta['jira_entry'])) {
                 $aRow['jira_entry'] = $aMeta['jira_entry'];
             }
@@ -97,6 +100,12 @@ class TimeEntries
         }
         $aReturn = $this->mergeNonProjects($aReturn);
         return $aReturn;
+    }
+    protected function getJiraHelper (){
+        if (!$this->oJiraHelper){
+            $this->oJiraHelper = resolve('\App\Toggl\JiraHelper');
+        }
+        return $this->oJiraHelper;
     }
 
     protected function mergeNonProjects($aEntries)

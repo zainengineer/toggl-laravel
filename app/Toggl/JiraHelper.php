@@ -14,6 +14,11 @@ class JiraHelper
     protected $oTimeHelper;
     public function __construct(\Illuminate\Http\Request $oRequest, TimeEntries $oTimeHelper)
     {
+        $this->oTimeHelper = $oTimeHelper;
+        //move logic to java script
+        if (empty($_COOKIE['jira_config'])){
+            return;
+        }
         $vJiraConfig = $_COOKIE['jira_config'];
         $aJsonConfig = json_decode($vJiraConfig,true);
         $this->vBaseUrl = $aJsonConfig['base_url'];
@@ -25,7 +30,6 @@ class JiraHelper
 
         // Create a client and provide a base URL
         $this->oClient = new Client($this->vBaseUrl . 'rest/api/2');
-        $this->oTimeHelper = $oTimeHelper;
 
     }
     public function addTimeLog($vIssue, $vStartedAt, $vTime, $vComment)
@@ -41,7 +45,7 @@ class JiraHelper
         $oRequest->send();
 
     }
-    protected function jiraRestDateFormat($vTime)
+    public function jiraRestDateFormat($vTime)
     {
         $vFormatted = date(DATE_ISO8601, strtotime($vTime));
         if (!strpos($vFormatted,'.')){
@@ -51,6 +55,8 @@ class JiraHelper
              *
              * Also note that PHP recommends using DATE_ATOM for full compatibility with
              * ISO8601 but it is even worse (basically it uses 00 time zone)
+             *
+             * Sample: 2017-04-18T10:19:41.0+0930
              */
             $vFormatted = str_replace("+", ".0+", $vFormatted);
         }

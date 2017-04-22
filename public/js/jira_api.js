@@ -6,12 +6,12 @@ JiraApi.authKey = '';
 JiraApi.sampleTicket = '';
 JiraApi._ajaxConfig = {};
 JiraApi.iframe = null;
-JiraApi.init = function (baseUrl, authKey, sampleTicket,iframeId) {
+JiraApi.init = function (baseUrl, authKey, sampleTicket,iframeId,iframeUrl) {
     this.baseUrl = baseUrl;
     this.authKey = authKey;
     this.sampleTicket = sampleTicket;
     this.iframe = document.getElementById(iframeId);
-    this.iframe.src = baseUrl;
+    this.iframe.src = iframeUrl;
     if (baseUrl && authKey && sampleTicket) {
         this.initialized = true;
     }
@@ -19,7 +19,19 @@ JiraApi.init = function (baseUrl, authKey, sampleTicket,iframeId) {
 JiraApi.testTicket = function () {
     return this.getTicketInfo(this.sampleTicket);
 };
-JiraApi.getTicketInfo = async function (ticketNumber) {
+JiraApi.handleRequest = function (config){
+    let message = JSON.stringify({config:config});
+    this.iframe.contentWindow.postMessage(message,'*');
+    // try {
+    //     let output = await Promise.resolve(jQuery.when($.ajax(config)));
+    //     // let output = await Promise.resolve(jQuery.when( $.ajax( "/js/common.js" ) ));
+    //     console.log(output);
+    // } catch (e) {
+    //     console.log("Error caught");
+    //     console.log(e);
+    // }
+};
+JiraApi.getTicketInfo = function (ticketNumber) {
     if (!this.initialized){
         // reject('not initialized');
         throw 'not initialized';
@@ -27,23 +39,49 @@ JiraApi.getTicketInfo = async function (ticketNumber) {
     let baseUrl = this.getBaseUrl() + '/issue/' + ticketNumber;
     let config = this.getAjaxConfig();
     config.url = baseUrl;
-    let message = JSON.stringify({config:config});
-    this.iframe.contentWindow.postMessage(message,'*');
-    return ;
-    try {
-        let output = await Promise.resolve(jQuery.when($.ajax(config)));
-        // let output = await Promise.resolve(jQuery.when( $.ajax( "/js/common.js" ) ));
-        console.log(output);
-    } catch (e) {
-        console.log("Error caught");
-        console.log(e);
-    }
-    // let output =$.when( $.ajax( "test.aspx" ) );
-    // console.log(output);
+    this.handleRequest(config);
+};
+JiraApi.postTime = function(timeObject){
+    let jiraTicket = timeObject.ticket;
+    let baseUrl = this.getBaseUrl() + '/issue/' + jiraTicket + '/worklog';
+    let config = this.getAjaxConfig();
+    config.url = baseUrl;
+    config.method = "POST";
+    config.data = {
+        comment: timeObject.jira_entry,
+        started: timeObject.jira_start,
+        timeSpent: timeObject.jira_time
+    };
+    /**
+     * TODO: investigate why stringify is needed here
+     * for some reason jquery ajax in jira creates it into object again
+     */
+    config.data = JSON.stringify(config.data);
+    this.handleRequest(config);
 };
 JiraApi.getBaseUrl = function () {
     return this.baseUrl + '/rest/api/2';
 };
+// JiraApi.getJiraTimeForLog = function(fHours, bPadding){
+//     let iHour = fHours.floor();
+//     let vHour = iHour ? iHour + 'h' : '';
+//     let iMinutes = Math.round((fHours - iHour) * 60);
+//     let vMinute = iMinutes ? iMinutes + 'm' : '';
+//     if (!vHour && bPadding){
+//         if (iMinutes < 10) {
+//             vMinute = " " + vMinute;
+//         }
+//         return "   " + vMinute;
+//     }
+//     return String.trim(vHour +" " + vMinute);
+// };
+// JiraApi.getJiraDateStartOfLog = function (date){
+//     let dtDate = new Date(date);
+//     //2017-04-22T20:29:00.804Z
+//     let vDate = dtDate.toISOString();
+//     //needed format 2017-04-18T10:19:41.0+0930
+//
+// };
 JiraApi.getAjaxConfig = function () {
     if (this._ajaxConfig) {
         this._ajaxConfig.headers = {
@@ -62,6 +100,10 @@ window.addEventListener('message', function (event) {
     let url = event.origin;
     let hostname = (new URL(url)).hostname;
     let tld = hostname.split('.').pop();
+    let timeSpent = event.data.timeSpent;
+    if (timeSpent){
+        alert('logged now ' + timeSpent);
+    }
     console.log(event.data);
     console.log(url);
 }, false);
