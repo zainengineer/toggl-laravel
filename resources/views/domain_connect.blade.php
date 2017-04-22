@@ -1,6 +1,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.3/js.cookie.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.16/clipboard.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/jira_api.js"></script>
 
 <link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css'>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.css">
@@ -13,6 +15,13 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
 
                        name="jira_config"></textarea>
 <input class="jira-config-submit" value="save jira config" type="submit"/>
+<br/>
+<input class="jira-test-config" value="test jira config" type="submit"/>
+
+<br/>
+<br/>
+Needs cross header requests enabled
+<a href="https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi/related?utm_source=chrome-app-launcher-info-dialog">cross origin extension</a>
 <script>
 
 
@@ -98,6 +107,7 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
             return vJson;
         }
     };
+
     JiraConnect.bindElements = function() {
         if (this.binded){
             return;
@@ -105,17 +115,26 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
         this.binded = true;
         this.$jira_config =  jQuery('#jira_config_json');
         $('.jira-config-submit').click(this.saveConfig);
+        $('.jira-test-config').click(JiraApi.testTicket);
         $('.jira-send-button').click(this.sendData);
-        var config;
-        if (config = this.getConfig()){
-            this.$jira_config.val(config)
-        }
-        else{
+        if (!this.reInit()){
             this.$jira_config.val(JSON.stringify({
                 'base_url': "enter_base_url",
                 'auth_key': "enter_auth"
             },null, 4));
         }
+    };
+    JiraConnect.reInit = function(){
+        var config = this.getConfig();
+        if (!this.$jira_config.val()){
+            this.$jira_config.val(config);
+        }
+        if (!config){
+            return false;
+        }
+        var oConfig = JSON.parse(config);
+        JiraApi.init(oConfig.base_url,oConfig.auth_key,oConfig.sample_ticket);
+        return true;
     };
     JiraConnect.saveConfig = function(){
         var vJson = this.$jira_config.val();
@@ -144,6 +163,7 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
 //            alert( "complete" );
         });
     };
+
     ZJsTools.bindAllFunctions(JiraConnect);
 
 </script>
