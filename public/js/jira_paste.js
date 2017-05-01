@@ -1,3 +1,9 @@
+/**
+ * got to console
+ *  console on top left should say "top"
+ *  from drop down select iframe_jira (so this code executes in that context
+ *  paste in console
+ */
 window.addEventListener('message', async function (event) {
     let url = event.origin;
     let hostname = (new URL(url)).hostname;

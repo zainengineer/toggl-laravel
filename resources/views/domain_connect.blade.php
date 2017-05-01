@@ -17,6 +17,14 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
                        name="jira_config"></textarea>
 <input class="jira-config-submit" value="save jira config" type="submit"/>
 <br/>
+
+<button class="clip-board-trigger" data-clipboard-text="<?php echo file_get_contents(public_path() . '/js/jira_paste.js'); ?>">
+    <i class="fa fa-clipboard" aria-hidden="true"></i> Copy js to clipboard
+</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.16/clipboard.js"></script>
+
+<br/>
 <input class="jira-test-config" value="test jira config" type="submit"/>
 {{--<br/>--}}
 {{--<br/>--}}
@@ -110,8 +118,10 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
         $('.jira-send-button').click(this.sendData);
         if (!this.reInit()){
             this.$jira_config.val(JSON.stringify({
-                'base_url': "enter_base_url",
-                'auth_key': "enter_auth"
+                'base_url': "enter_base_url (no slash at the end)",
+                'auth_key': "can_skip",
+                'sample_ticket': "CM-56",
+                'iframe_url': "enter_iframe_url like /secure/Dashboard.jspa",
             },null, 4));
         }
     };
