@@ -18,7 +18,7 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
 <input class="jira-config-submit" value="save jira config" type="submit"/>
 <br/>
 
-<button class="clip-board-trigger" data-clipboard-text="<?php echo file_get_contents(public_path() . '/js/jira_paste.js'); ?>">
+<button class="clip-board-trigger" data-clipboard-text="<?php echo htmlentities(file_get_contents(public_path() . '/js/jira_paste.js')); ?>">
     <i class="fa fa-clipboard" aria-hidden="true"></i> Copy js to clipboard
 </button>
 
