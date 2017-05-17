@@ -7,8 +7,8 @@ class ViewHelper
 {
     public function getTimeLink($aSingleTimeEntry)
     {
-        $vData = json_encode($aSingleTimeEntry);
-        $vDataHtml = htmlentities($vData);
+        $vData = json_encode($aSingleTimeEntry,ENT_QUOTES, 'UTF-8');
+        $vDataHtml = htmlspecialchars($vData);
         if (strpos($aSingleTimeEntry['ticket'], '-')) {
             ob_start();
             ?>
