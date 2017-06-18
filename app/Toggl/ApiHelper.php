@@ -5,55 +5,39 @@ use Illuminate\Support\Facades\Cache;
 class ApiHelper
 {
     protected $bEnableCache;
-    /** @var static \AJT\Toggl\TogglClient */
-    protected $oClient;
-    /** @var \Illuminate\Http\Request \Illuminate\Http\Request */
+    /** @var  ClientProxy */
+    protected $oClientProxy;
+    /** @var \Illuminate\Http\Request */
     protected $oRequest;
 
-    public function __construct(\Illuminate\Http\Request $oRequest)
+    public function __construct(ClientProxy $oClientProxy)
     {
-        $this->bEnableCache = isset($_GET['enable_cache']) ? $_GET['enable_cache'] : true;
-        $this->oRequest = $oRequest;
-        $this->resetClient();
+        $this->oClientProxy = $oClientProxy;
     }
     Public function resetClient()
     {
         $vTogglApiKey = $this->getKey();
         $this->oClient = \AJT\Toggl\TogglClient::factory(['api_key' => $vTogglApiKey]);
     }
+    public function getProjects()
+    {
+
+    }
 
     public function getTimeEntries($vStartDate, $vEndDate)
     {
-//        $expiresAt = \Carbon\Carbon::now()->addMinutes(10);
-        $vCacheKey = 'time_entries_' . $this->getKey();
-        $vCacheKey.= '-' . $vStartDate . '-' . $vEndDate;
-        $aTimeList = Cache::get($vCacheKey);
-        if (!$aTimeList || !$this->bEnableCache){
-            //$aTimeList = $this->oClient->getTimeEntries(array());
-            $aParam = [];
-            if ($vStartDate){
-                $aParam['start_date'] = $vStartDate;
-            }
-            if ($vEndDate){
-                $aParam['end_date'] = $vEndDate;
-            }
-            $aTimeList = $this->oClient->getTimeEntries($aParam);
-            Cache::put($vCacheKey,$aTimeList,20);
+        $aParam = [];
+        if ($vStartDate){
+            $aParam['start_date'] = $vStartDate;
         }
+        if ($vEndDate){
+            $aParam['end_date'] = $vEndDate;
+        }
+        $aTimeList = $this->oClientProxy->getTimeEntries($aParam);
         return $aTimeList;
     }
     public function isValidKey()
     {
-        try {
-            $this->resetClient();
-            $this->oClient->getClients();
-        } catch(\Exception $e){
-            return false;
-        }
-        return true;
-    }
-    protected function getKey()
-    {
-        return $this->oRequest->cookie('toggl_api') ? : @$_ENV['TOGGL_API_KEY'];
+        return $this->oClientProxy->isValidKey();
     }
 }
