@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use \App\Toggl;
 use Illuminate\Pagination\Paginator;
+use Symfony\Component\Yaml\Yaml;
 
 
 class TogglController extends Controller
@@ -328,5 +329,11 @@ class TogglController extends Controller
     protected function getSundayTolerance()
     {
         return isset($_GET['sunday_tolerance']) ? $_GET['sunday_tolerance'] : $this->iDefaultMondayToleranceHours;
+    }
+    public function testActionZ()
+    {
+//        $vYaml = file_get_contents(public_path() . '/test.yaml');
+//        $value = Yaml::parse($vYaml);
+//        dd($value);
     }
 }

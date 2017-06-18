@@ -149,7 +149,7 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
         this.$jira_config =  jQuery('#jira_config_json');
         $('.jira-config-submit').click(this.saveConfig);
         $('.jira-test-config').click(JiraApi.testTicket);
-        $('.jira-send-button').click(this.sendData);
+        $(document).on('click','.jira-send-button',this.sendData);
         if (!this.reInit()){
             this.$jira_config.val(JSON.stringify({
                 'base_url': "enter_base_url (no slash at the end)",
