@@ -1,5 +1,4 @@
 JiraApi = {};
-JiraApi = {};
 JiraApi.initialized = false;
 JiraApi.baseUrl = '';
 JiraApi.authKey = '';

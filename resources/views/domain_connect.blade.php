@@ -1,8 +1,45 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.3/js.cookie.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.16/clipboard.js"></script>
-<script src="/js/common.js"></script>
-<script src="/js/jira_api.js"></script>
+<script>
+<?php
+require_once public_path() . '/js/load.js';
+?>
+    loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'],'jQuery');
+    loadjs.ready(['jQuery'],{
+        success: function() {
+            loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js'],'pjax');
+        }
+    });
+    loadjs.ready('pjax', {
+        success: function() {
+            jQuery().ready(function(){
+                jQuery(document).pjax('a', '#pjax-container');
+            });
+        }
+    });
+    loadjs([
+       'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.16/clipboard.js'
+    ],'ClipBoard');
+    loadjs([
+        '/js/common.js',
+        '/js/jira_api.js'
+    ],'localjs');
+    loadjs([
+        'https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.3/js.cookie.min.js'
+    ],'cookie');
+    loadjs.ready(['jQuery','ClipBoard','localjs','cookie'],{
+        success: function() {
+            jQuery(function(){
+                zClipBoardBind = new Clipboard('.clip-board-trigger');
+            });
+
+            ZJsTools.bindAllFunctions(DomainConnect);
+            ZJsTools.bindAllFunctions(JiraConnect);
+            jQuery(function(){
+                DomainConnect.bindElements();
+                JiraConnect.bindElements();
+            });
+        }
+    });
+</script>
 
 <link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css'>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.css">
@@ -22,8 +59,6 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
     <i class="fa fa-clipboard" aria-hidden="true"></i> Copy js to clipboard
 </button>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.16/clipboard.js"></script>
-
 <br/>
 <input class="jira-test-config" value="test jira config" type="submit"/>
 {{--<br/>--}}
@@ -31,11 +66,6 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
 {{--Needs cross header requests enabled--}}
 {{--<a href="https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi/related?utm_source=chrome-app-launcher-info-dialog">cross origin extension</a>--}}
 <script>
-
-
-    $(function(){
-        zClipBoardBind = new Clipboard('.clip-board-trigger');
-    });
 
     DomainConnect = {};
     DomainConnect.cookieName = 'connect_url';
@@ -81,12 +111,6 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
         win.postMessage(message,'*');
     };
 
-    ZJsTools.bindAllFunctions(DomainConnect);
-
-    $(function(){
-        DomainConnect.bindElements();
-        JiraConnect.bindElements();
-    });
 
     JiraConnect = {};
     JiraConnect.cookieName = 'jira_config';
@@ -166,7 +190,6 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
 //        });
     };
 
-    ZJsTools.bindAllFunctions(JiraConnect);
 
 </script>
 <br/>

@@ -41,7 +41,9 @@ class TogglController extends Controller
     public function lastWeek(Request $oRequest)
     {
         try {
-            echo view('domain_connect')->render();
+            if (!$oRequest->hasHeader('X-PJAX')){
+                echo view('domain_connect')->render();
+            }
             $oHelper = $this->getTimeEntriesHelper();
             $aTimeEntries = $oHelper->getEntriesByProject();
         } catch (\Guzzle\Http\Exception\BadResponseException $e) {
@@ -52,7 +54,15 @@ class TogglController extends Controller
         }
 //        echo "<pre>";
 //        print_r($aTimeEntries);
-        $this->displayTimeEntries($aTimeEntries, $oHelper);
+        echo $this->manageDisplayEntriesDisplay($aTimeEntries, $oHelper);
+    }
+    protected function manageDisplayEntriesDisplay($aPersonInfo, Toggl\TimeEntries $oHelper)
+    {
+        $vContents = "<div id='pjax-container'>\n";
+//        $vContents .= "<a href='" . $this->replaceGetParametersUrl([]) . "'>my test links</a>";
+        $vContents .= $this->displayTimeEntries($aPersonInfo, $oHelper);
+        $vContents.= "</div>";
+        return $vContents;
     }
 
     protected function getCacheToggleLink()
@@ -133,6 +143,7 @@ class TogglController extends Controller
 
     protected function displayTimeEntries($aPersonInfo, Toggl\TimeEntries $oHelper)
     {
+        ob_start();
         $this->showHeaderLink();
         $aDayGrandTotal = [];
         $fWeekGrandTotal = 0;
@@ -202,6 +213,7 @@ class TogglController extends Controller
             echo "$vDateFormatted\t\t$vDuration\n";
         }
         echo "\nWeek GrandTotal\t\t" . $fWeekGrandTotal;
+        return ob_get_clean();
     }
 
     public function getPreviousMondayStamp()
