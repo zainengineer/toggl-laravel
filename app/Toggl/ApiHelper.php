@@ -21,7 +21,8 @@ class ApiHelper
     }
     public function getProjects()
     {
-
+        $aProjects = $this->oClientProxy->getProjects();
+        return $aProjects;
     }
 
     public function getTimeEntries($vStartDate, $vEndDate)

@@ -57,7 +57,7 @@ class TogglController extends Controller
             }
             $oHelper = $this->getTimeEntriesHelper();
             $aTimeEntries = $oHelper->getEntriesByProject();
-        } catch (\Guzzle\Http\Exception\BadResponseException $e) {
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 403) {
                 return redirect()->route('askApiToken');
             }
@@ -332,6 +332,8 @@ class TogglController extends Controller
     }
     public function testActionZ()
     {
+        $oHelper = $this->getTimeEntriesHelper();
+        $t = $oHelper->getProjects();
 //        $vYaml = file_get_contents(public_path() . '/test.yaml');
 //        $value = Yaml::parse($vYaml);
 //        dd($value);

@@ -4,8 +4,15 @@ namespace App\Toggl;
 use Illuminate\Support\Facades\Cache;
 class ClientProxy
 {
+    /**
+     *
+     */
     protected $bEnableCache;
-    /** @var static \AJT\Toggl\TogglClient */
+    protected $oLastCommand;
+    /**
+     * @mixing \MorningTrain\TogglApi\TogglApi
+     * @var \MorningTrain\TogglApi\TogglApi
+     */
     protected $oClient;
 
     public function __construct(\Illuminate\Http\Request $oRequest)
@@ -17,7 +24,14 @@ class ClientProxy
     Public function resetClient()
     {
         $vTogglApiKey = $this->getKey();
-        $this->oClient = \AJT\Toggl\TogglClient::factory(['api_key' => $vTogglApiKey]);
+
+        $this->oClient = new \MorningTrain\TogglApi\TogglApi($vTogglApiKey);
+
+//        $this->oClient->getEventDispatcher()->addListener('client.command.create', function (\Guzzle\Common\Event $e) {
+//
+//            $this->oLastCommand = $e['command'];
+//        });
+
     }
     /**
      *
@@ -36,6 +50,13 @@ class ClientProxy
             }
         }
         $return = call_user_func_array(array($this->oClient, $methodName), $args);
+//        $oRequest = $this->oLastCommand->getRequest();
+//        require_once app_path() . '/../vendor/namshi/cuzzle/src/Namshi/Guzzle/Formatter/CurlShellFormatter.php';
+//        $vCommand =  (new CurlShellFormatter())->format($oRequest);
+        //this is a dummy line so breakpoint can be placed on this line
+
+        $vRequest = (new \Namshi\Cuzzle\Formatter\CurlFormatter())->format($this->oClient->oLastRequest, []);
+
         if ($vCacheKey){
             Cache::put($vCacheKey,$return,20);
         }

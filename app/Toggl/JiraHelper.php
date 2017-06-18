@@ -29,7 +29,7 @@ class JiraHelper
         $this->vBaseUrl = rtrim($this->vBaseUrl, "/") . '/';
 
         // Create a client and provide a base URL
-        $this->oClient = new Client($this->vBaseUrl . 'rest/api/2');
+        $this->oClient = new \GuzzleHttp\Client(['base_uri' => $this->vBaseUrl . 'rest/api/2']);
 
     }
     public function addTimeLog($vIssue, $vStartedAt, $vTime, $vComment)

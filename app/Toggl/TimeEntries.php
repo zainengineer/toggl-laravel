@@ -101,6 +101,10 @@ class TimeEntries
         $aReturn = $this->mergeNonProjects($aReturn);
         return $aReturn;
     }
+    public function getProjects()
+    {
+        return $this->oApiHelper->getProjects();
+    }
     protected function getJiraHelper (){
         if (!$this->oJiraHelper){
             $this->oJiraHelper = resolve('\App\Toggl\JiraHelper');
