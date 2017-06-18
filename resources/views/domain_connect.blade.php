@@ -19,7 +19,7 @@ require_once public_path() . '/js/load.js';
                 $('.loading').hide();
             });
             $().ready(function(){
-                jQuery(document).pjax('a', '#pjax-container');
+                jQuery(document).pjax('.domain-connect a', '#pjax-container');
             });
         }
     });
@@ -90,7 +90,7 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
             this.JInput.val(valueInCookie);
             this.sourceConnect(valueInCookie);
         }
-        $('.post-data-send').click(this.sendData);
+        $(document).on('click','.post-data-send',this.sendData);
 
         this.binded = true;
     };
@@ -204,3 +204,4 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
 </script>
 <br/>
 <br/>
+</div>

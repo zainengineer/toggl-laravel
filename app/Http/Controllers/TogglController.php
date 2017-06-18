@@ -12,6 +12,10 @@ class TogglController extends Controller
     protected $oTimeHelper;
     protected $iCachedLastMonday;
     protected $oViewHelper;
+    /**
+     * @var Request $oRequest
+     */
+    protected $oRequest;
     public function __construct(Toggl\ViewHelper $oViewHelper)
     {
         $this->oViewHelper = $oViewHelper;
@@ -22,9 +26,10 @@ class TogglController extends Controller
      */
     protected function getRequest()
     {
-        /** @var Request $oRequest */
-        $oRequest = resolve('Illuminate\Http\Request');
-        return $oRequest;
+        if (!$this->oRequest){
+            $this->oRequest = resolve('Illuminate\Http\Request');
+        }
+        return $this->oRequest;
     }
 
     /**
@@ -37,11 +42,16 @@ class TogglController extends Controller
         }
         return $this->oTimeHelper;
     }
+    protected function isPjax()
+    {
+        $oRequest = $this->getRequest();
+        return $oRequest->hasHeader('X-PJAX');
+    }
 
     public function lastWeek(Request $oRequest)
     {
         try {
-            if (!$oRequest->hasHeader('X-PJAX')){
+            if (!$this->isPjax()){
                 echo view('domain_connect')->render();
             }
             $oHelper = $this->getTimeEntriesHelper();
@@ -58,10 +68,11 @@ class TogglController extends Controller
     }
     protected function manageDisplayEntriesDisplay($aPersonInfo, Toggl\TimeEntries $oHelper)
     {
-        $vContents = "<div id='pjax-container'>\n";
 //        $vContents .= "<a href='" . $this->replaceGetParametersUrl([]) . "'>my test links</a>";
-        $vContents .= $this->displayTimeEntries($aPersonInfo, $oHelper);
-        $vContents.= "</div>";
+        $vContents = $this->displayTimeEntries($aPersonInfo, $oHelper);
+        if (!$this->isPjax()){
+            $vContents = "<div id='pjax-container'>\n$vContents</div>";
+        }
         return $vContents;
     }
 
@@ -135,6 +146,7 @@ class TogglController extends Controller
 
     protected function showHeaderLink()
     {
+        echo '<div class="domain-connect">';
         $aLinks = [
             $this->getCacheToggleLink(),
             $this->getPreviousWeekLink(),
@@ -142,6 +154,7 @@ class TogglController extends Controller
         ];
         $vLinks = implode("<br/>\n", $aLinks);
         echo $vLinks;
+        echo '</div>';
 
     }
 
