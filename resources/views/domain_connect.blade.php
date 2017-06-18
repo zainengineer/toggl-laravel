@@ -10,7 +10,15 @@ require_once public_path() . '/js/load.js';
     });
     loadjs.ready('pjax', {
         success: function() {
-            jQuery().ready(function(){
+            $.pjax.defaults.timeout = 0;
+            $('.loading').hide();
+            $(document).on('pjax:send', function() {
+                $('.loading').show()
+            });
+            $(document).on('pjax:complete', function() {
+                $('.loading').hide();
+            });
+            $().ready(function(){
                 jQuery(document).pjax('a', '#pjax-container');
             });
         }
@@ -61,6 +69,8 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
 
 <br/>
 <input class="jira-test-config" value="test jira config" type="submit"/>
+
+<i class="fa fa-spinner fa-spin loading" aria-hidden="true"></i>
 {{--<br/>--}}
 {{--<br/>--}}
 {{--Needs cross header requests enabled--}}

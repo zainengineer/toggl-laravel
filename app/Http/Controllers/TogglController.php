@@ -91,6 +91,10 @@ class TogglController extends Controller
             if (is_null($vParamValue)){
                 unset($aParam[$vParamName]);
             }
+            //ignore params like _pjax
+            elseif (strpos($vParamName,'_')===0){
+                unset($aParam[$vParamName]);
+            }
             else{
                 $aParam[$vParamName] = $vParamValue;
             }
