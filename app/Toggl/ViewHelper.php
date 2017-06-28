@@ -25,4 +25,14 @@ class ViewHelper
         }
         return $vLink;
     }
+    public function getTicketHeader($vTicket)
+    {
+        ob_start();
+        echo $vTicket . "\n";
+        ?>
+        <div class="work-log-container <?php echo  htmlentities($vTicket) ; ?>"></div>
+        <?php
+        $vTicketHeader = ob_get_clean();
+        return $vTicketHeader;
+    }
 }

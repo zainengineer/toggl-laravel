@@ -1,3 +1,6 @@
+<?php
+    require_once resource_path() . '/views/handle-bar-template.php';
+?>
 <script>
 <?php
 require_once public_path() . '/js/load.js';
@@ -8,6 +11,7 @@ require_once public_path() . '/js/load.js';
             loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js'],'pjax');
         }
     });
+    loadjs(['https://cdnjs.cloudflare.com/ajax/libs/js-sha1/0.4.1/sha1.min.js'],'misc');
     loadjs.ready('pjax', {
         success: function() {
             $.pjax.defaults.timeout = 0;
@@ -28,12 +32,18 @@ require_once public_path() . '/js/load.js';
     ],'ClipBoard');
     loadjs([
         '/js/common.js',
-        '/js/jira_api.js'
+        '/js/jira_api.js',
+        '/js/jira_cache.js',
+        '/js/object_state.js',
+        '/js/project_template.js'
     ],'localjs');
     loadjs([
         'https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.3/js.cookie.min.js'
     ],'cookie');
-    loadjs.ready(['jQuery','ClipBoard','localjs','cookie'],{
+    loadjs([
+        'https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js',
+    ],'free_load');
+    loadjs.ready(['jQuery','ClipBoard','localjs','cookie','misc'],{
         success: function() {
             jQuery(function(){
                 zClipBoardBind = new Clipboard('.clip-board-trigger');
@@ -41,6 +51,7 @@ require_once public_path() . '/js/load.js';
 
             ZJsTools.bindAllFunctions(DomainConnect);
             ZJsTools.bindAllFunctions(JiraConnect);
+            ZJsTools.bindAllFunctions(JiraApi);
             jQuery(function(){
                 DomainConnect.bindElements();
                 JiraConnect.bindElements();
@@ -52,8 +63,8 @@ require_once public_path() . '/js/load.js';
 <link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css'>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.css">
 
-<iframe style="display:none"  id="iframe_message" style="height:60px"></iframe>
-<iframe style="display:none"  id="iframe_jira" style="height:60px"></iframe>
+<iframe style="display:none;height:60px"  id="iframe_message" ></iframe>
+<iframe style="display:none;height:60px"  id="iframe_jira" ></iframe>
 Connect Url: <input class="connect_url_input" type="text" name="connect_url" />
 <input class="connect-submit" type="submit"/>
 <br/>

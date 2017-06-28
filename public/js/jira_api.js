@@ -5,6 +5,7 @@ JiraApi.authKey = '';
 JiraApi.sampleTicket = '';
 JiraApi._ajaxConfig = {};
 JiraApi.iframe = null;
+JiraApi.lastUpdatedTicket = false;
 JiraApi.init = function (baseUrl, authKey, sampleTicket,iframeId,iframeUrl) {
     this.baseUrl = baseUrl;
     this.authKey = authKey;
@@ -38,11 +39,14 @@ JiraApi.getTicketInfo = function (ticketNumber) {
     let baseUrl = this.getBaseUrl() + '/issue/' + ticketNumber;
     let config = this.getAjaxConfig();
     config.url = baseUrl;
+    config.method = "GET";
     this.handleRequest(config);
 };
 JiraApi.postTime = function(timeObject){
     let jiraTicket = timeObject.ticket;
     let baseUrl = this.getBaseUrl() + '/issue/' + jiraTicket + '/worklog';
+    this.lastUpdatedTicket = jiraTicket;
+    debugger;
     let config = this.getAjaxConfig();
     config.url = baseUrl;
     config.method = "POST";
@@ -93,16 +97,23 @@ JiraApi.getAjaxConfig = function () {
     }
     return this._ajaxConfig;
 };
-ZJsTools.bindAllFunctions(JiraApi);
+JiraApi.processResponse = function(event){
+    if (ZJsTools.checkNested(event.data,'fields.worklog.worklogs')){
+        JiraCache.saveTicket(event.data);
+        ZProjectTemplate.updateTicket(event.data.fields.worklog.worklogs,event.data.key)
+    }
+    else if(event.data.timeSpent){
+        debugger;
+        this.getTicketInfo(this.lastUpdatedTicket);
+        alert('logged now ' + event.data.timeSpent);
+    }
+};
 
 window.addEventListener('message', function (event) {
     let url = event.origin;
     let hostname = (new URL(url)).hostname;
     let tld = hostname.split('.').pop();
-    let timeSpent = event.data.timeSpent;
-    if (timeSpent){
-        alert('logged now ' + timeSpent);
-    }
+    JiraApi.processResponse(event);
     console.log(event.data);
     console.log(url);
 }, false);
