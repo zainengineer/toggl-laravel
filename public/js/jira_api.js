@@ -57,7 +57,18 @@ JiraApi.getTicketInfo = function (project,ticketNumber) {
     ZProjectTemplate.setProjectForTicket(project,ticketNumber);
     this.handleRequest(project,ticketNumber,config);
 };
-JiraApi.getWorkLog = function (project,ticketNumber) {
+JiraApi.processWorkLogPreferCached = function (project,ticket){
+    let worklog = JiraCache.getWorkLog(project,ticket);
+    if (worklog){
+        worklog.cached = true;
+        return ZProjectTemplate.updateTicket(false,ticket,project,worklog);
+    }
+    else{
+        this.getWorkLog(project,ticket);
+    }
+
+};
+JiraApi.processWorkLog = function (project,ticketNumber) {
     if (!this.initialized){
         // reject('not initialized');
         throw 'not initialized';
@@ -149,7 +160,8 @@ JiraApi.processResponse = function(event){
         ZProjectTemplate.checkPointIncrement();
     }
     else if (output && output.worklogs){
-        debugger;
+        JiraCache.saveWorkLog(meta.project,meta.ticket,output.worklogs);
+        ZProjectTemplate.updateTicket(false,meta.ticket,meta.project,output.worklogs);
     }
     else{
         debugger;

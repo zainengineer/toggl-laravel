@@ -48,14 +48,13 @@ ZStorage.getObject = function(key)
 JiraCache = {};
 JiraCache.key_prefix = 'jira_ticket_';
 JiraCache.saveTicket = function (project,ticket,ticketInfo) {
-    debugger;
     ZStorage.saveObject(JiraCache.key_prefix + project + '-'+ ticket,ticketInfo);
 };
 JiraCache.saveWorkLog = function (project,ticket,worklog) {
     ZStorage.saveObject(JiraCache.key_prefix + '-worklog-' + project + '-'+ ticket,worklog);
 };
-JiraCache.getWorkLog = function (project,ticket,worklog) {
-    ZStorage.getObject(JiraCache.key_prefix + '-worklog-' + project + '-'+ ticket);
+JiraCache.getWorkLog = function (project,ticket) {
+    return ZStorage.getObject(JiraCache.key_prefix + '-worklog-' + project + '-'+ ticket);
 };
 JiraCache.getTicket = function (project, ticket)
 {

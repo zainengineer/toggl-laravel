@@ -18,23 +18,27 @@ ZProjectTemplate.workLogsRegister = function()
 ZProjectTemplate.callBack = function (key,$selector,data){
     // this.regi
 };
-ZProjectTemplate.updateTicket = function(ticketInfo,ticket,project){
+ZProjectTemplate.updateTicket = function(ticketInfo,ticket,project,worklogsGiven){
     this.workLogsRegister();
-    debugger;
-    let worklogs = ticketInfo.fields.worklog.worklogs;
+    let worklogs;
+    worklogs = worklogsGiven ? worklogsGiven : ticketInfo.fields.worklog.worklogs;
     if (worklogs.length > 19){
         console.log('worklogs length ' + worklogs.length);
-        worklogs = worklogs.slice(0,9);
+        worklogs = worklogs.slice(worklogs.length-9,worklogs.length);
     }
-    let title = ticketInfo.fields.summary;
     let context = {worklogs:worklogs};
     let html    = this._work_log_template(context);
     $('.work-log-container.' + project + '.' + ticket).html(html);
-    $('.ticket-title.' + project + '.' + ticket).html(ticket + ': ' + title);
+    if (ticketInfo){
+        let title = ticketInfo.fields.summary;
+        $('.ticket-title.' + project + '.' + ticket).html(ticket + ': ' + title);
+    }
 };
+
 ZProjectTemplate.updateTicketFromCache = function(project,ticket){
     let ticketCache = JiraCache.getTicket(project,ticket);
     if (ticketCache){
+        ticketCache.cached = true;
         this.updateTicket(ticketCache,ticket,project);
         return true;
     }
