@@ -131,7 +131,7 @@ JiraApi.processResponse = function(event){
         alert('logged now ' + event.data.timeSpent);
     }
     else if (event.data.type == 'ready'){
-        ZProjectTemplate.showAllTicketsOnce()
+        ZProjectTemplate.checkPointIncrement();
     }
 };
 

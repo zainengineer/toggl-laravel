@@ -181,7 +181,7 @@ class TogglController extends Controller
                         continue;
                     }
                     if ($bShowProject) {
-                        echo "<pre>$vProjectName\n</pre>";
+                        echo "<div>$vProjectName</div>";
                         $bShowProject = false;
 
                     }
@@ -194,7 +194,7 @@ class TogglController extends Controller
                     }
                     $fTicketTotal = 0;
                     $fDuration = 0;
-                    echo "<pre>\n    $vDate\n</pre>";
+                    echo "<div>$vDate</div>";
                     foreach ($aTimeEntries as $aSingleTimeEntry) {
                         $fDuration = $aSingleTimeEntry['duration'];
                         $fTicketTotal += $fDuration;
@@ -214,11 +214,8 @@ class TogglController extends Controller
                         }
                         echo "<pre>    $fTicketTotal\t$vJiraTime $vTimeLink \n</pre>";
                     }
-                    echo "<pre>\n</pre>";
                 }
-                echo "<pre>\n</pre>";
             }
-            echo "<pre>\n</pre>";
         }
         ksort($aDayGrandTotal);
         $vContents = ob_get_clean();

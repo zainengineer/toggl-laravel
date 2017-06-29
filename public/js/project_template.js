@@ -2,6 +2,7 @@ ZProjectTemplate = {};
 ZProjectTemplate.projectTicketMap = {};
 ZProjectTemplate._work_log_template = false;
 ZProjectTemplate.logsDisplayedOnce = false;
+ZProjectTemplate.checkLoadPoints = 0;
 ZProjectTemplate.registerTypes = function()
 {
     this.workLogsRegister();
@@ -51,6 +52,14 @@ ZProjectTemplate.setProjectForTicket = function (project, ticket){
     }
     else{
         this.projectTicketMap[ticket] = project;
+    }
+};
+ZProjectTemplate.checkPointIncrement = function(){
+    this.checkLoadPoints++;
+    console.log('checkpoint: ' + this.checkLoadPoints);
+    if (this.checkLoadPoints>1){
+        console.log('checkpoint: complete loaded');
+        this.showAllTicketsOnce();
     }
 };
 

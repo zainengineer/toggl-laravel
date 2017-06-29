@@ -59,6 +59,7 @@ require_once public_path() . '/js/load.js';
             jQuery(function(){
                 DomainConnect.bindElements();
                 JiraConnect.bindElements();
+                ZProjectTemplate.checkPointIncrement();
             });
         }
     });
