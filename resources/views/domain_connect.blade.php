@@ -59,7 +59,6 @@ require_once public_path() . '/js/load.js';
             jQuery(function(){
                 DomainConnect.bindElements();
                 JiraConnect.bindElements();
-                ZProjectTemplate.showAllTickets();
             });
         }
     });
@@ -69,7 +68,7 @@ require_once public_path() . '/js/load.js';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.css">
 
 <iframe style="display:none;height:60px"  id="iframe_message" ></iframe>
-<iframe style="display:none;height:60px"  id="iframe_jira" ></iframe>
+<div id="iframe-container"></div>
 Connect Url: <input class="connect_url_input" type="text" name="connect_url" />
 <input class="connect-submit" type="submit"/>
 <br/>
@@ -143,17 +142,20 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
     JiraConnect.setConfig = function(value){
         //            Cookies.set(this.cookieName, vJson, { expires: 365 });
         try {
-            JSON.parse(value);
+             if (!jsyaml.load(value)){
+                 throw new Error('no value set');
+             }
             localStorage.setItem(this.cookieName,value);
+            Cookies.set(this.cookieName);
         } catch (e) {
             alert('value is not properly formatted json');
         }
     };
     JiraConnect.getConfig = function(){
         //        var vJson= Cookies.get(this.cookieName);
-        var vJson =  localStorage.getItem(this.cookieName);
-        if (JSON.parse(vJson)){
-            return vJson;
+        let vYaml =  localStorage.getItem(this.cookieName);
+        if (jsyaml.safeLoad(vYaml)){
+            return vYaml;
         }
     };
 
@@ -167,24 +169,28 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
         $('.jira-test-config').click(JiraApi.testTicket);
         $(document).on('click','.jira-send-button',this.sendData);
         if (!this.reInit()){
-            this.$jira_config.val(JSON.stringify({
+            this.$jira_config.val(jsyaml.safeDump({
+                project1:{
+                'project_prefix': "proj1",
+                'ticket_prefix': "PJ-",
                 'base_url': "enter_base_url (no slash at the end)",
                 'auth_key': "can_skip",
-                'sample_ticket': "CM-56",
+                'sample_ticket': "PJ-56",
                 'iframe_url': "enter_iframe_url like /secure/Dashboard.jspa",
-            },null, 4));
+                }
+            }));
         }
     };
     JiraConnect.reInit = function(){
-        var config = this.getConfig();
+        let config = this.getConfig();
         if (!this.$jira_config.val()){
             this.$jira_config.val(config);
         }
         if (!config){
             return false;
         }
-        var oConfig = JSON.parse(config);
-        JiraApi.init(oConfig.base_url,oConfig.auth_key,oConfig.sample_ticket,'iframe_jira',oConfig.iframe_url);
+        JiraApi.configObject = jsyaml.load(config);
+        JiraApi.init();
         return true;
     };
     JiraConnect.saveConfig = function(){
@@ -193,11 +199,13 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
     };
     JiraConnect.sendData = function(event){
         let oTimeEntry = jQuery(event.target).data('timeEntry');
+
         //clicked innert <i>
         if (!oTimeEntry){
             oTimeEntry = jQuery(event.target).parent().data('timeEntry');
         }
-        JiraApi.postTime(oTimeEntry);
+        let project = oTimeEntry.project;
+        JiraApi.postTime(project,oTimeEntry);
         console.log(oTimeEntry);
 //        var ajaxRequest = {
 //            method: "POST",

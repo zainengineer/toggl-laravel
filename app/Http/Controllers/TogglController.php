@@ -187,7 +187,7 @@ class TogglController extends Controller
 
                     }
                     if ($bShowTicket) {
-                        echo $this->oViewHelper->getTicketHeader($vTicket);
+                        echo $this->oViewHelper->getTicketHeader($vProjectName,$vTicket);
                         $bShowTicket = false;
                     }
                     if (!isset($aDayGrandTotal[$vDate])) {

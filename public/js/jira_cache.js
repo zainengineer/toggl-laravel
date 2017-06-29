@@ -47,11 +47,11 @@ ZStorage.getObject = function(key)
 
 JiraCache = {};
 JiraCache.key_prefix = 'jira_ticket_';
-JiraCache.saveTicket = function (ticketInfo) {
+JiraCache.saveTicket = function (project,ticketInfo) {
     let ticket = ticketInfo.key;
-    ZStorage.saveObject(JiraCache.key_prefix + ticket,ticketInfo);
+    ZStorage.saveObject(JiraCache.key_prefix + project + '-'+ ticket,ticketInfo);
 };
-JiraCache.getTicket = function (ticket)
+JiraCache.getTicket = function (project, ticket)
 {
-    return ZStorage.getObject(JiraCache.key_prefix + ticket);
+    return ZStorage.getObject(JiraCache.key_prefix + project + '-'+ ticket);
 };

@@ -36,3 +36,11 @@ window.addEventListener('message', async function (event) {
     }
 
 }, false);
+if (document.readyState == 'complete'){
+    window.parent.postMessage({type:'ready'},'*');
+}
+else{
+    document.addEventListener("DOMContentLoaded", function(){
+        window.parent.postMessage({type:'ready'},'*');
+    });
+}

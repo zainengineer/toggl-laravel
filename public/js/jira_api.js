@@ -6,22 +6,36 @@ JiraApi.sampleTicket = '';
 JiraApi._ajaxConfig = {};
 JiraApi.iframe = null;
 JiraApi.lastUpdatedTicket = false;
+JiraApi.lastProject = false;
+JiraApi.configObject = {};
 JiraApi.init = function (baseUrl, authKey, sampleTicket,iframeId,iframeUrl) {
-    this.baseUrl = baseUrl;
-    this.authKey = authKey;
-    this.sampleTicket = sampleTicket;
-    this.iframe = document.getElementById(iframeId);
-    this.iframe.src = iframeUrl;
-    if (baseUrl && authKey && sampleTicket) {
-        this.initialized = true;
-    }
+    this.initIframe();
+    this.initialized = true;
 };
+JiraApi.initIframe = function()
+{
+    let $iframeContainer = $('#iframe-container');
+    for (let prop in this.configObject) {
+        if (this.configObject.hasOwnProperty(prop)){
+            let configProject = this.configObject[prop];
+            let iframeUrl = configProject.iframe_url;
+            let projectPrefix = configProject.project_prefix;
+            let iframeId = 'iframe_project_' + projectPrefix;
+            $iframeContainer.append('<iframe style="display:none;height:60px" id="'+ iframeId + '"></iframe>');
+            configProject.iframe = document.getElementById(iframeId);
+            configProject.iframe.src = iframeUrl;
+        }
+    }
+
+};
+
 JiraApi.testTicket = function () {
     return this.getTicketInfo(this.sampleTicket);
 };
-JiraApi.handleRequest = function (config){
+
+JiraApi.handleRequest = function (project,config){
     let message = JSON.stringify({config:config});
-    this.iframe.contentWindow.postMessage(message,'*');
+    this.getIframe(project).contentWindow.postMessage(message,'*');
     // try {
     //     let output = await Promise.resolve(jQuery.when($.ajax(config)));
     //     // let output = await Promise.resolve(jQuery.when( $.ajax( "/js/common.js" ) ));
@@ -31,20 +45,22 @@ JiraApi.handleRequest = function (config){
     //     console.log(e);
     // }
 };
-JiraApi.getTicketInfo = function (ticketNumber) {
+JiraApi.getTicketInfo = function (project,ticketNumber) {
     if (!this.initialized){
         // reject('not initialized');
         throw 'not initialized';
     }
-    let baseUrl = this.getBaseUrl() + '/issue/' + ticketNumber;
+    let baseUrl = this.getBaseUrl(project) + '/issue/' + ticketNumber;
     let config = this.getAjaxConfig();
     config.url = baseUrl;
     config.method = "GET";
-    this.handleRequest(config);
+    ZProjectTemplate.setProjectForTicket(project,ticketNumber);
+    this.handleRequest(project,config);
 };
-JiraApi.postTime = function(timeObject){
+
+JiraApi.postTime = function(project,timeObject){
     let jiraTicket = timeObject.ticket;
-    let baseUrl = this.getBaseUrl() + '/issue/' + jiraTicket + '/worklog';
+    let baseUrl = this.getBaseUrl(project) + '/issue/' + jiraTicket + '/worklog';
     this.lastUpdatedTicket = jiraTicket;
     debugger;
     let config = this.getAjaxConfig();
@@ -60,10 +76,14 @@ JiraApi.postTime = function(timeObject){
      * for some reason jquery ajax in jira creates it into object again
      */
     config.data = JSON.stringify(config.data);
-    this.handleRequest(config);
+    ZProjectTemplate.setProjectForTicket(project,jiraTicket);
+    this.handleRequest(project,config);
 };
-JiraApi.getBaseUrl = function () {
-    return this.baseUrl + '/rest/api/2';
+JiraApi.getBaseUrl = function (project) {
+    return this.configObject[project].base_url + '/rest/api/2';
+};
+JiraApi.getIframe = function (project) {
+    return this.configObject[project].iframe;
 };
 // JiraApi.getJiraTimeForLog = function(fHours, bPadding){
 //     let iHour = fHours.floor();
@@ -99,13 +119,19 @@ JiraApi.getAjaxConfig = function () {
 };
 JiraApi.processResponse = function(event){
     if (ZJsTools.checkNested(event.data,'fields.worklog.worklogs')){
-        JiraCache.saveTicket(event.data);
-        ZProjectTemplate.updateTicket(event.data,event.data.key)
+        let ticketNumber = event.data.key;
+        JiraCache.saveTicket(event.data,ticketNumber);
+        let project = ZProjectTemplate.getProject(ticketNumber);
+        ZProjectTemplate.updateTicket(event.data,ticketNumber,project)
     }
     else if(event.data.timeSpent){
         debugger;
-        this.getTicketInfo(this.lastUpdatedTicket);
+        let project = ZProjectTemplate.getProject(this.lastUpdatedTicket);
+        this.getTicketInfo(project ,this.lastUpdatedTicket);
         alert('logged now ' + event.data.timeSpent);
+    }
+    else if (event.data.type == 'ready'){
+        ZProjectTemplate.showAllTicketsOnce()
     }
 };
 
