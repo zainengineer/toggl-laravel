@@ -28,9 +28,10 @@ class ViewHelper
     public function getTicketHeader($vTicket)
     {
         ob_start();
-        echo $vTicket . "\n";
+        $vTicketEntity = htmlentities($vTicket);
         ?>
-        <div class="work-log-container <?php echo  htmlentities($vTicket) ; ?>"></div>
+        <span class="ticket-title <?php echo $vTicketEntity; ?>"><?php echo $vTicket; ?></span>
+        <span class="work-log-container <?php echo  $vTicketEntity ; ?>" data-ticket="<?php echo $vTicketEntity; ?>"></span>
         <?php
         $vTicketHeader = ob_get_clean();
         return $vTicketHeader;

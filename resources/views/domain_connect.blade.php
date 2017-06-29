@@ -11,7 +11,10 @@ require_once public_path() . '/js/load.js';
             loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js'],'pjax');
         }
     });
-    loadjs(['https://cdnjs.cloudflare.com/ajax/libs/js-sha1/0.4.1/sha1.min.js'],'misc');
+    loadjs([
+        'https://cdnjs.cloudflare.com/ajax/libs/js-sha1/0.4.1/sha1.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.8.4/js-yaml.min.js'
+    ],'misc');
     loadjs.ready('pjax', {
         success: function() {
             $.pjax.defaults.timeout = 0;
@@ -52,9 +55,11 @@ require_once public_path() . '/js/load.js';
             ZJsTools.bindAllFunctions(DomainConnect);
             ZJsTools.bindAllFunctions(JiraConnect);
             ZJsTools.bindAllFunctions(JiraApi);
+            ZJsTools.bindAllFunctions(ZProjectTemplate);
             jQuery(function(){
                 DomainConnect.bindElements();
                 JiraConnect.bindElements();
+                ZProjectTemplate.showAllTickets();
             });
         }
     });
