@@ -56,9 +56,7 @@ ZProjectTemplate.setProjectForTicket = function (project, ticket){
 };
 ZProjectTemplate.checkPointIncrement = function(){
     this.checkLoadPoints++;
-    console.log('checkpoint: ' + this.checkLoadPoints);
     if (this.checkLoadPoints>1){
-        console.log('checkpoint: complete loaded');
         this.showAllTicketsOnce();
     }
 };

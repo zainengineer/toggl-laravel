@@ -24,6 +24,7 @@ require_once public_path() . '/js/load.js';
             });
             $(document).on('pjax:complete', function() {
                 $('.loading').hide();
+                ZProjectTemplate.showAllTickets();
             });
             $().ready(function(){
                 jQuery(document).pjax('.domain-connect a', '#pjax-container');
