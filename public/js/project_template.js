@@ -20,11 +20,15 @@ ZProjectTemplate.callBack = function (key,$selector,data){
 };
 ZProjectTemplate.updateTicket = function(ticketInfo,ticket,project){
     this.workLogsRegister();
+    debugger;
     let worklogs = ticketInfo.fields.worklog.worklogs;
+    if (worklogs.length > 19){
+        console.log('worklogs length ' + worklogs.length);
+        worklogs = worklogs.slice(0,9);
+    }
     let title = ticketInfo.fields.summary;
     let context = {worklogs:worklogs};
     let html    = this._work_log_template(context);
-    debugger;
     $('.work-log-container.' + project + '.' + ticket).html(html);
     $('.ticket-title.' + project + '.' + ticket).html(ticket + ': ' + title);
 };

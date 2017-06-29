@@ -48,12 +48,22 @@ class TogglController extends Controller
         $oRequest = $this->getRequest();
         return $oRequest->hasHeader('X-PJAX');
     }
-
+    protected function publishJsHash()
+    {
+        $vDirectory = public_path();
+        $vHash = "";
+        foreach (glob("$vDirectory/js/*.js") as $filename) {
+            $vHash.= sha1_file($filename);
+        }
+        return sha1($vHash);
+    }
     public function lastWeek(Request $oRequest)
     {
         try {
             if (!$this->isPjax()){
-                echo view('domain_connect')->render();
+                $vView = view('domain_connect')->render();
+                $vView = str_replace('z_hash',$this->publishJsHash(),$vView);
+                echo $vView;
             }
             $oHelper = $this->getTimeEntriesHelper();
             $aTimeEntries = $oHelper->getEntriesByProject();

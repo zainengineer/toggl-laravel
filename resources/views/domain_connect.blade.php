@@ -35,11 +35,11 @@ require_once public_path() . '/js/load.js';
        'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.16/clipboard.js'
     ],'ClipBoard');
     loadjs([
-        '/js/common.js',
-        '/js/jira_api.js',
-        '/js/jira_cache.js',
-        '/js/object_state.js',
-        '/js/project_template.js'
+        '/js/common.js?hash=z_hash',
+        '/js/jira_api.js?hash=z_hash',
+        '/js/jira_cache.js?hash=z_hash',
+        '/js/object_state.js?hash=z_hash',
+        '/js/project_template.js?hash=z_hash'
     ],'localjs');
     loadjs([
         'https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.3/js.cookie.min.js'

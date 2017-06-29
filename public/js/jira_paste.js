@@ -29,7 +29,8 @@ window.addEventListener('message', async function (event) {
         oData.config.processData = false;
         let output = await Promise.resolve(jQuery.when($.ajax(oData.config)));
         $.ajaxSettings.type = oldType ;
-        window.parent.postMessage(output,'*');
+        let sendData  = {dataIn:oData,output:output};
+        window.parent.postMessage(sendData,'*');
     }
     else {
         console.log('ignoring response from ' + url);

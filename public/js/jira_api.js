@@ -33,8 +33,8 @@ JiraApi.testTicket = function () {
     return this.getTicketInfo(this.sampleTicket);
 };
 
-JiraApi.handleRequest = function (project,config){
-    let message = JSON.stringify({config:config});
+JiraApi.handleRequest = function (project,ticket,config){
+    let message = JSON.stringify({config:config,meta:{project:project,ticket:ticket}});
     this.getIframe(project).contentWindow.postMessage(message,'*');
     // try {
     //     let output = await Promise.resolve(jQuery.when($.ajax(config)));
@@ -55,7 +55,19 @@ JiraApi.getTicketInfo = function (project,ticketNumber) {
     config.url = baseUrl;
     config.method = "GET";
     ZProjectTemplate.setProjectForTicket(project,ticketNumber);
-    this.handleRequest(project,config);
+    this.handleRequest(project,ticketNumber,config);
+};
+JiraApi.getWorkLog = function (project,ticketNumber) {
+    if (!this.initialized){
+        // reject('not initialized');
+        throw 'not initialized';
+    }
+    let baseUrl = this.getBaseUrl(project) + '/issue/' + ticketNumber + '/worklog';
+    let config = this.getAjaxConfig();
+    config.url = baseUrl;
+    config.method = "GET";
+    ZProjectTemplate.setProjectForTicket(project,ticketNumber);
+    this.handleRequest(project,ticketNumber,config);
 };
 
 JiraApi.postTime = function(project,timeObject){
@@ -77,7 +89,7 @@ JiraApi.postTime = function(project,timeObject){
      */
     config.data = JSON.stringify(config.data);
     ZProjectTemplate.setProjectForTicket(project,jiraTicket);
-    this.handleRequest(project,config);
+    this.handleRequest(project,jiraTicket,config);
 };
 JiraApi.getBaseUrl = function (project) {
     return this.configObject[project].base_url + '/rest/api/2';
@@ -118,20 +130,30 @@ JiraApi.getAjaxConfig = function () {
     return this._ajaxConfig;
 };
 JiraApi.processResponse = function(event){
-    if (ZJsTools.checkNested(event.data,'fields.worklog.worklogs')){
-        let ticketNumber = event.data.key;
-        let project = ZProjectTemplate.getProject(ticketNumber);
-        JiraCache.saveTicket(project,ticketNumber,event.data);
-        ZProjectTemplate.updateTicket(event.data,ticketNumber,project)
+    debugger;
+
+    let output = ZJsTools.checkNested(event,'data.output',true) ?  event.data.output : {};
+    let meta = ZJsTools.checkNested(event,'data.dataIn.meta',true) ?  event.data.dataIn.meta : {};
+    if (output && ZJsTools.checkNested(output,'fields.worklog.worklogs')){
+        let ticketNumber = meta.ticket;
+        let project = meta.project;
+        JiraCache.saveTicket(project,ticketNumber,output);
+        ZProjectTemplate.updateTicket(output,ticketNumber,project)
     }
-    else if(event.data.timeSpent){
+    else if(output && output.timeSpent){
         debugger;
-        let project = ZProjectTemplate.getProject(this.lastUpdatedTicket);
-        this.getTicketInfo(project ,this.lastUpdatedTicket);
-        alert('logged now ' + event.data.timeSpent);
+        this.getTicketInfo(meta.project ,meta.ticket);
+        alert('logged now ' + output.timeSpent);
     }
     else if (event.data.type == 'ready'){
         ZProjectTemplate.checkPointIncrement();
+    }
+    else if (output && output.worklogs){
+        debugger;
+    }
+    else{
+        debugger;
+        console.log(event.data);
     }
 };
 
