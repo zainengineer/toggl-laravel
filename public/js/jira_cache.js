@@ -47,8 +47,7 @@ ZStorage.getObject = function(key)
 
 JiraCache = {};
 JiraCache.key_prefix = 'jira_ticket_';
-JiraCache.saveTicket = function (project,ticketInfo) {
-    let ticket = ticketInfo.key;
+JiraCache.saveTicket = function (project,ticket,ticketInfo) {
     ZStorage.saveObject(JiraCache.key_prefix + project + '-'+ ticket,ticketInfo);
 };
 JiraCache.getTicket = function (project, ticket)

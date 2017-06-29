@@ -33,7 +33,7 @@ class ViewHelper
     public function getTicketHeader($vProject,$vTicket)
     {
         if (!$this->isJiraTicket($vTicket)){
-            return "$vTicket\n";
+            return "<pre>$vTicket\n</pre>";
         }
         ob_start();
         $vTicketEntity = htmlentities($vTicket);

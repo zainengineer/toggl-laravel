@@ -167,7 +167,6 @@ class TogglController extends Controller
         $fWeekGrandTotal = 0;
         $fClosestMonday = $this->getClosestMondayStamp();
         $fClosestSunday = $this->getClosestSundayStamp();
-        echo "<pre>\n";
         ob_start();
         foreach ($aPersonInfo as $vProjectName => $aProjectInfo) {
             $bShowProject = true;
@@ -182,7 +181,7 @@ class TogglController extends Controller
                         continue;
                     }
                     if ($bShowProject) {
-                        echo "$vProjectName\n";
+                        echo "<pre>$vProjectName\n</pre>";
                         $bShowProject = false;
 
                     }
@@ -195,14 +194,14 @@ class TogglController extends Controller
                     }
                     $fTicketTotal = 0;
                     $fDuration = 0;
-                    echo "\n    $vDate\n";
+                    echo "<pre>\n    $vDate\n</pre>";
                     foreach ($aTimeEntries as $aSingleTimeEntry) {
                         $fDuration = $aSingleTimeEntry['duration'];
                         $fTicketTotal += $fDuration;
                         $aDayGrandTotal[$vDate] += $fDuration;
                         $fWeekGrandTotal += $fDuration;
                         $vJiraSingleTime = $oHelper->getJiraTime($fDuration,true);
-                        echo "      $fDuration\t$vJiraSingleTime \t{$aSingleTimeEntry['description']} {$this->oViewHelper->getTimeLink($aSingleTimeEntry)} \n";
+                        echo "<pre>      $fDuration\t$vJiraSingleTime \t{$aSingleTimeEntry['description']} {$this->oViewHelper->getTimeLink($aSingleTimeEntry)} \n</pre>";
                     }
                     if (abs($fDuration - $fTicketTotal) > 0.0001) {
                         $vJiraTime = $oHelper->getJiraTime($fTicketTotal,true);
@@ -213,18 +212,18 @@ class TogglController extends Controller
                             $aTicketSum['jira_time'] = $oHelper->getJiraTime($fTicketTotal,false);
                             $vTimeLink = $this->oViewHelper->getTimeLink($aTicketSum);
                         }
-                        echo "    $fTicketTotal\t$vJiraTime $vTimeLink \n";
+                        echo "<pre>    $fTicketTotal\t$vJiraTime $vTimeLink \n</pre>";
                     }
-                    echo "\n";
+                    echo "<pre>\n</pre>";
                 }
-                echo "\n";
+                echo "<pre>\n</pre>";
             }
-            echo "\n";
+            echo "<pre>\n</pre>";
         }
         ksort($aDayGrandTotal);
         $vContents = ob_get_clean();
         echo trim($vContents);
-        echo "\n\n";
+        echo "<pre>\n\n";
         foreach ($aDayGrandTotal as $vDate => $fDuration) {
             $vDuration = number_format($fDuration, 2);
             $vDateFormatted = date('D d-M', strtotime($vDate));

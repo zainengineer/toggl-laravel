@@ -120,8 +120,8 @@ JiraApi.getAjaxConfig = function () {
 JiraApi.processResponse = function(event){
     if (ZJsTools.checkNested(event.data,'fields.worklog.worklogs')){
         let ticketNumber = event.data.key;
-        JiraCache.saveTicket(event.data,ticketNumber);
         let project = ZProjectTemplate.getProject(ticketNumber);
+        JiraCache.saveTicket(project,ticketNumber,event.data);
         ZProjectTemplate.updateTicket(event.data,ticketNumber,project)
     }
     else if(event.data.timeSpent){

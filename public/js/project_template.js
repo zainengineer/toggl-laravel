@@ -23,13 +23,14 @@ ZProjectTemplate.updateTicket = function(ticketInfo,ticket,project){
     let title = ticketInfo.fields.summary;
     let context = {worklogs:worklogs};
     let html    = this._work_log_template(context);
+    debugger;
     $('.work-log-container.' + project + '.' + ticket).html(html);
     $('.ticket-title.' + project + '.' + ticket).html(ticket + ': ' + title);
 };
 ZProjectTemplate.updateTicketFromCache = function(project,ticket){
     let ticketCache = JiraCache.getTicket(project,ticket);
     if (ticketCache){
-        this.updateTicket(ticketCache,ticket);
+        this.updateTicket(ticketCache,ticket,project);
         return true;
     }
     return false;
@@ -61,6 +62,7 @@ ZProjectTemplate.showAllTicketsOnce = function(){
 };
 ZProjectTemplate.showAllTickets = function()
 {
+    this.workLogsRegister();
     jQuery('.work-log-container').each(function(index, el ){
         let ticket =  $(el).data( "ticket" );
         let project =  $(el).data( "project" );
