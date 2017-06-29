@@ -21,18 +21,29 @@ ZProjectTemplate.callBack = function (key,$selector,data){
 ZProjectTemplate.updateTicket = function(ticketInfo,ticket,project,worklogsGiven){
     this.workLogsRegister();
     let worklogs;
+    let processed = false;
     worklogs = worklogsGiven ? worklogsGiven : ticketInfo.fields.worklog.worklogs;
     if (worklogs.length > 19){
+        if (!worklogsGiven){
+            processed = JiraApi.processWorkLogPreferCached(project,ticket);
+            if (processed){
+                return;
+            }
+        }
+        debugger;
         console.log('worklogs length ' + worklogs.length);
         worklogs = worklogs.slice(worklogs.length-9,worklogs.length);
     }
+
     let context = {worklogs:worklogs};
     let html    = this._work_log_template(context);
-    $('.work-log-container.' + project + '.' + ticket).html(html);
+    $('.work-log-container.' + project + '.' + ticket).html(html)
+
     if (ticketInfo){
         let title = ticketInfo.fields.summary;
         $('.ticket-title.' + project + '.' + ticket).html(ticket + ': ' + title);
     }
+    return true;
 };
 
 ZProjectTemplate.updateTicketFromCache = function(project,ticket){

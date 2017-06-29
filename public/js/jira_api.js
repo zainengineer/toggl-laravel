@@ -141,7 +141,6 @@ JiraApi.getAjaxConfig = function () {
     return this._ajaxConfig;
 };
 JiraApi.processResponse = function(event){
-    debugger;
 
     let output = ZJsTools.checkNested(event,'data.output',true) ?  event.data.output : {};
     let meta = ZJsTools.checkNested(event,'data.dataIn.meta',true) ?  event.data.dataIn.meta : {};
@@ -152,7 +151,6 @@ JiraApi.processResponse = function(event){
         ZProjectTemplate.updateTicket(output,ticketNumber,project)
     }
     else if(output && output.timeSpent){
-        debugger;
         this.getTicketInfo(meta.project ,meta.ticket);
         alert('logged now ' + output.timeSpent);
     }
