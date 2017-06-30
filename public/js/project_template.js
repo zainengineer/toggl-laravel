@@ -20,6 +20,9 @@ ZProjectTemplate.callBack = function (key,$selector,data){
     // this.regi
 };
 ZProjectTemplate.updateTicket = function(ticketInfo,ticket,project,worklogsGiven){
+    if (project =='aligent'){
+        debugger;
+    }
     this.workLogsRegister();
     let worklogs;
     let processed = false;
@@ -50,7 +53,8 @@ ZProjectTemplate.filterWorkLog = function (worklogs) {
     for (let i in worklogs) {
         let worklog = worklogs[i];
         let logDate = new Date(worklog.started);
-        if ((logDate >= startDate) && (logDate <= endDate)) {
+        if ((!this.jsonMeta.start_date || (logDate >= startDate))
+            && (!this.jsonMeta.end_date || (logDate <= endDate))) {
             filteredWorkLogs.push(worklog);
         }
     }

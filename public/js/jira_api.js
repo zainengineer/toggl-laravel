@@ -35,7 +35,7 @@ JiraApi.testTicket = function () {
 
 
 JiraApi.handleRequest = function (project,ticket,config){
-    project = this.getProjectFromTicket(project, ticket);
+    project = this.getProjectFromTicket(ticket, project);
     let message = JSON.stringify({config:config,meta:{project:project,ticket:ticket}});
     this.getIframe(project).contentWindow.postMessage(message,'*');
     // try {
@@ -129,6 +129,7 @@ JiraApi.getProjectFromTicket = function(ticket,project){
             return obj.project_prefix;
         }
     }
+    debugger;
     throw new Error('invalid project in data ' + project);
 };
 // JiraApi.getJiraTimeForLog = function(fHours, bPadding){
