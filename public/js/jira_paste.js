@@ -37,7 +37,7 @@ window.addEventListener('message', async function (event) {
     }
 
 }, false);
-if (document.readyState == 'complete'){
+if ((document.readyState == 'complete') || (document.readyState == 'interactive')){
     window.parent.postMessage({type:'ready'},'*');
 }
 else{
