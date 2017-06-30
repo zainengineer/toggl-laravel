@@ -3,6 +3,7 @@ ZProjectTemplate.projectTicketMap = {};
 ZProjectTemplate._work_log_template = false;
 ZProjectTemplate.logsDisplayedOnce = false;
 ZProjectTemplate.checkLoadPoints = 0;
+ZProjectTemplate.jsonMeta = {};
 ZProjectTemplate.registerTypes = function()
 {
     this.workLogsRegister();
@@ -30,20 +31,30 @@ ZProjectTemplate.updateTicket = function(ticketInfo,ticket,project,worklogsGiven
                 return;
             }
         }
-        debugger;
-        console.log('worklogs length ' + worklogs.length);
-        worklogs = worklogs.slice(worklogs.length-9,worklogs.length);
     }
-
+    worklogs = this.filterWorkLog(worklogs);
     let context = {worklogs:worklogs};
     let html    = this._work_log_template(context);
-    $('.work-log-container.' + project + '.' + ticket).html(html)
+    $('.work-log-container.' + project + '.' + ticket).html(html);
 
     if (ticketInfo){
         let title = ticketInfo.fields.summary;
         $('.ticket-title.' + project + '.' + ticket).html(ticket + ': ' + title);
     }
     return true;
+};
+ZProjectTemplate.filterWorkLog = function (worklogs) {
+    let startDate = new Date(this.jsonMeta.start_date);
+    let endDate = new Date(this.jsonMeta.end_date);
+    let filteredWorkLogs = [];
+    for (let i in worklogs) {
+        let worklog = worklogs[i];
+        let logDate = new Date(worklog.started);
+        if ((logDate >= startDate) && (logDate <= endDate)) {
+            filteredWorkLogs.push(worklog);
+        }
+    }
+    return filteredWorkLogs;
 };
 
 ZProjectTemplate.updateTicketFromCache = function(project,ticket){
@@ -89,6 +100,7 @@ ZProjectTemplate.showAllTicketsOnce = function(){
 ZProjectTemplate.showAllTickets = function()
 {
     this.workLogsRegister();
+    this.jsonMeta = JSON.parse($('#injected-json').val());
     jQuery('.work-log-container').each(function(index, el ){
         let ticket =  $(el).data( "ticket" );
         let project =  $(el).data( "project" );

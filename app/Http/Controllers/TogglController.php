@@ -168,11 +168,22 @@ class TogglController extends Controller
         echo '</div>';
 
     }
+    protected function injectJsonData()
+    {
+        $oHelper = $this->getTimeEntriesHelper();
+        $arrayData = [
+            'start_date' => $oHelper->getStartDate(),
+            'end_date' => $oHelper->getEndDate(),
+        ];
+        $vAttribute = htmlspecialchars(json_encode($arrayData), ENT_QUOTES,'UTF-8');
+        return "<input id='injected-json' type='hidden' value='$vAttribute' />";
+    }
 
     protected function displayTimeEntries($aPersonInfo, Toggl\TimeEntries $oHelper)
     {
         ob_start();
         $this->showHeaderLink();
+        echo $this->injectJsonData();
         $aDayGrandTotal = [];
         $fWeekGrandTotal = 0;
         $fClosestMonday = $this->getClosestMondayStamp();

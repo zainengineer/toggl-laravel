@@ -3,8 +3,8 @@
     <br/>
     {{#each worklogs}}
     <div class="time-entry">
-            <span>{{created}}</span>
             <span>{{timeSpent}}</span>
+            <span>{{created}}</span>
             <span>{{comment}}</span>
     </div>
     {{/each}}
