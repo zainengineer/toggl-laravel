@@ -33,7 +33,9 @@ JiraApi.testTicket = function () {
     return this.getTicketInfo(this.sampleTicket);
 };
 
+
 JiraApi.handleRequest = function (project,ticket,config){
+    project = this.getProjectFromTicket(project, ticket);
     let message = JSON.stringify({config:config,meta:{project:project,ticket:ticket}});
     this.getIframe(project).contentWindow.postMessage(message,'*');
     // try {
@@ -103,10 +105,31 @@ JiraApi.postTime = function(project,timeObject){
     this.handleRequest(project,jiraTicket,config);
 };
 JiraApi.getBaseUrl = function (project) {
+    //ticket is sent instead of project name
+    project = this.getProjectFromTicket(project, project);
     return this.configObject[project].base_url + '/rest/api/2';
 };
 JiraApi.getIframe = function (project) {
     return this.configObject[project].iframe;
+};
+/**
+ * @param ticket
+ * @param project
+ * @returns {*}
+ */
+JiraApi.getProjectFromTicket = function(ticket,project){
+    project = project.toLowerCase();
+    ticket = ticket.toLowerCase();
+    if (this.configObject.hasOwnProperty(project)){
+        return project;
+    }
+    for (let i in this.configObject) {
+        let obj = this.configObject[i];
+        if (ticket.indexOf(obj.ticket_prefix.toLowerCase())===0){
+            return obj.project_prefix;
+        }
+    }
+    throw new Error('invalid project in data ' + project);
 };
 // JiraApi.getJiraTimeForLog = function(fHours, bPadding){
 //     let iHour = fHours.floor();

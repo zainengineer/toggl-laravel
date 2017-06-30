@@ -4,7 +4,7 @@
     {{#each worklogs}}
     <div class="time-entry">
             <span>{{timeSpent}}</span>
-            <span>{{created}}</span>
+            <span>{{started}}</span>
             <span>{{comment}}</span>
     </div>
     {{/each}}
