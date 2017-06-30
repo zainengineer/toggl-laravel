@@ -86,7 +86,8 @@ ZProjectTemplate.setProjectForTicket = function (project, ticket){
 };
 ZProjectTemplate.checkPointIncrement = function(){
     this.checkLoadPoints++;
-    if (this.checkLoadPoints>1){
+    let projectCount = Object.keys(JiraApi.configObject).length;
+    if (this.checkLoadPoints>projectCount){
         this.showAllTicketsOnce();
     }
 };
