@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Toggl;
+use App\Http\Controllers\TogglController;
 use Illuminate\Support\Facades\Cache;
 class ClientProxy
 {
@@ -14,11 +15,12 @@ class ClientProxy
      * @var \MorningTrain\TogglApi\TogglApi
      */
     protected $oClient;
+    protected $oToolHelper;
 
-    public function __construct(\Illuminate\Http\Request $oRequest)
+    public function __construct(\Illuminate\Http\Request $oRequest, ToolHelper $oToolHelper)
     {
-        $this->bEnableCache = isset($_GET['enable_cache']) ? $_GET['enable_cache'] : true;
-        $this->bEnableCache = $this->bEnableCache ? !empty($_GET['_by_pass_cache']) : false;
+        $this->bEnableCache = $oToolHelper->cacheEnabled();
+        $this->bEnableCache = $this->bEnableCache ? !$oRequest->get('_by_pass_cache') : false;
         $this->oRequest = $oRequest;
         $this->resetClient();
     }

@@ -13,13 +13,15 @@ class TogglController extends Controller
     protected $oTimeHelper;
     protected $iCachedLastMonday;
     protected $oViewHelper;
+    protected $oToolHelper;
     /**
      * @var Request $oRequest
      */
     protected $oRequest;
-    public function __construct(Toggl\ViewHelper $oViewHelper)
+    public function __construct(Toggl\ViewHelper $oViewHelper, Toggl\ToolHelper $oToolHelper)
     {
         $this->oViewHelper = $oViewHelper;
+        $this->oToolHelper = $oToolHelper;
     }
 
     /**
@@ -90,9 +92,9 @@ class TogglController extends Controller
     protected function getCacheToggleLink()
     {
         $aParam = [];
-        $bEnableCache = empty($_GET['enable_cache']);
-        $aParam['enable_cache'] = $bEnableCache ? 1 : 0;
-        $vTitle = $bEnableCache ? "Enable Cache" : "Disable Cache";
+        $bCacheEnabled = $this->oToolHelper->cacheEnabled();
+        $aParam['enable_cache'] = $bCacheEnabled ? 0 : 1;
+        $vTitle = $bCacheEnabled ? "Disable Cache" : "Enable Cache" ;
         $vLink = $this->replaceGetParametersLink($aParam, $vTitle);
         return $vLink;
     }
@@ -120,12 +122,17 @@ class TogglController extends Controller
             if (is_null($vParamValue)){
                 unset($aParam[$vParamName]);
             }
-            //ignore params like _pjax
-            elseif (strpos($vParamName,'_')===0){
-                unset($aParam[$vParamName]);
-            }
             else{
                 $aParam[$vParamName] = $vParamValue;
+            }
+        }
+        foreach ($aParam as $vParamName => $vParamValue) {
+            //ignore params like _pjax
+            if ((strpos($vParamName, '_') === 0) &&
+                //_ sent by code not by server.
+                !isset($aParamValue[$vParamName])
+            ) {
+                unset($aParam[$vParamName]);
             }
         }
         $vUrl = http_build_query($aParam);
