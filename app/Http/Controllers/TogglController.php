@@ -95,7 +95,14 @@ class TogglController extends Controller
         $vTitle = $bEnableCache ? "Enable Cache" : "Disable Cache";
         $vLink = $this->replaceGetParametersLink($aParam, $vTitle);
         return $vLink;
-
+    }
+    protected function getByPassCacheLink()
+    {
+        $aParam = [];
+        $aParam['_by_pass_cache'] = 1;
+        $vTitle = "By pass Cache";
+        $vLink = $this->replaceGetParametersLink($aParam, $vTitle);
+        return $vLink;
     }
 
     protected function replaceGetParametersLink($aParamValue, $vTitle)
@@ -160,6 +167,7 @@ class TogglController extends Controller
         echo '<div class="domain-connect">';
         $aLinks = [
             $this->getCacheToggleLink(),
+            $this->getByPassCacheLink(),
             $this->getPreviousWeekLink(),
             $this->getNextWeekLink(),
         ];

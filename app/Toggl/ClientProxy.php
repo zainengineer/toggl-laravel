@@ -18,6 +18,7 @@ class ClientProxy
     public function __construct(\Illuminate\Http\Request $oRequest)
     {
         $this->bEnableCache = isset($_GET['enable_cache']) ? $_GET['enable_cache'] : true;
+        $this->bEnableCache = $this->bEnableCache ? !empty($_GET['_by_pass_cache']) : false;
         $this->oRequest = $oRequest;
         $this->resetClient();
     }
