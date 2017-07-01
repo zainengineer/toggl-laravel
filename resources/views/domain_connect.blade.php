@@ -21,11 +21,18 @@ require_once public_path() . '/js/load.js';
             $.pjax.defaults.timeout = 0;
             $('.loading').hide();
             $(document).on('pjax:send', function() {
+                window.pjaxOffSetScrollTop = (document.documentElement.scrollTop || document.body.scrollTop);
                 $('.loading').show()
             });
             $(document).on('pjax:complete', function() {
                 $('.loading').hide();
                 ZProjectTemplate.showAllTickets();
+                if (window.pjaxOffSetScrollTop){
+                    $('html, body').animate({
+                        scrollTop: pjaxOffSetScrollTop + 'px'
+                    }, 'fast');
+                    window.pjaxOffSetScrollTo = 0;
+                }
             });
             $().ready(function(){
                 jQuery(document).pjax('.domain-connect a', '#pjax-container');
@@ -127,7 +134,12 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
         this.binded = true;
     };
     DomainConnect.updateTask = async function(event){
-        alert('update task only supported by premium');
+//        window.pjaxOffSetScrollTo = $(event.target).offset();
+//        window.pjaxOffSetScrollTop = (document.documentElement.scrollTop || document.body.scrollTop);
+        $('.by-pass-cache').trigger('click');
+        window.setTimeout(() => {
+            alert('update task only supported by premium');
+        }, 1);
         return ;
         let data = jQuery(event.target).closest('.link-container').find('.post-data-send').data('post');
         //        let promised = await Promise.resolve(jQuery.when(DomainConnect.promiseConfirm('testing')));
