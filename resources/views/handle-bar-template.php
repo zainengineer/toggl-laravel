@@ -2,10 +2,11 @@
     <br/>
     <br/>
     {{#each worklogs}}
-    <div class="time-entry">
-            <span>{{timeSpent}}</span>
-            <span>{{started}}</span>
-            <span>{{comment}}</span>
+    <div class="time-entry row">
+            <span class="col-1">{{timeSpent}}</span>
+            <span class="col">{{started}}</span>
+            <span class="col">{{comment}}</span>
+            <span class="col-3">&nbsp;</span>
     </div>
     {{/each}}
     <br/>

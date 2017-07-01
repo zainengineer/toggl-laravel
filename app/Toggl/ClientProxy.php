@@ -46,7 +46,7 @@ class ClientProxy
     public function __call($methodName, $args)
     {
         $vCacheKey = $this->getCacheKey($methodName,$args);
-        if ($this->bEnableCache && $vCacheKey){
+        if ($this->cacheMethod($methodName) && $vCacheKey){
             $cachedValue =  Cache::get($vCacheKey);
             if ($cachedValue){
                 return $cachedValue;
@@ -64,6 +64,16 @@ class ClientProxy
             Cache::put($vCacheKey,$return,20);
         }
         return $return;
+    }
+    protected function cacheMethod($methodName)
+    {
+        if ($this->bEnableCache && (substr($methodName,0,3)=='get')){
+            return true;
+        }
+    }
+    public function updateTask($vEntryId,$vTaskMessage)
+    {
+//        $this->oClient->updateTask($vEntryId, $vTaskMessage);
     }
     protected function getCacheKey($methodName,$args)
     {

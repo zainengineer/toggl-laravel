@@ -230,14 +230,14 @@ class TogglController extends Controller
                     }
                     $fTicketTotal = 0;
                     $fDuration = 0;
-                    echo "<div>$vDate</div>";
+                    echo "<div class='ticket-date'>$vDate</div>";
                     foreach ($aTimeEntries as $aSingleTimeEntry) {
                         $fDuration = $aSingleTimeEntry['duration'];
                         $fTicketTotal += $fDuration;
                         $aDayGrandTotal[$vDate] += $fDuration;
                         $fWeekGrandTotal += $fDuration;
-                        $vJiraSingleTime = $oHelper->getJiraTime($fDuration,true);
-                        echo "<pre>      $fDuration\t$vJiraSingleTime \t{$aSingleTimeEntry['description']} {$this->oViewHelper->getTimeLink($aSingleTimeEntry)} \n</pre>";
+
+                        echo $this->oViewHelper->getTogglEntry($fDuration,$aSingleTimeEntry);
                     }
                     if (abs($fDuration - $fTicketTotal) > 0.0001) {
                         $vJiraTime = $oHelper->getJiraTime($fTicketTotal,true);

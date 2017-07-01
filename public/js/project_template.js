@@ -20,15 +20,16 @@ ZProjectTemplate.callBack = function (key,$selector,data){
     // this.regi
 };
 ZProjectTemplate.updateTicket = function(ticketInfo,ticket,project,worklogsGiven){
-    if (project =='aligent'){
-        debugger;
-    }
     this.workLogsRegister();
     let worklogs;
     let processed = false;
     worklogs = worklogsGiven ? worklogsGiven : ticketInfo.fields.worklog.worklogs;
     if (worklogs.length > 19){
         if (!worklogsGiven){
+            if (ticketInfo){
+                let title = ticketInfo.fields.summary;
+                $('.ticket-title.' + project + '.' + ticket).html(ticket + ': ' + title);
+            }
             processed = JiraApi.processWorkLogPreferCached(project,ticket);
             if (processed){
                 return;
