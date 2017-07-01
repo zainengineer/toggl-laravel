@@ -29,13 +29,17 @@ class ViewHelper
             $vLink = ob_get_clean();
         }
         else{
-            $vLink = "<span class='link-container'><a class='post-data-send' href='javascript:void(0)' data-post='$vDataHtml'>send</a> {$this->getUpdateTask()}</span>";
+            $vLink = "<span class='link-container'><a class='post-data-send' href='javascript:void(0)' data-post='$vDataHtml'>send</a> {$this->getRefreshTask()}</span>";
         }
         return $vLink;
     }
     protected function getUpdateTask()
     {
         return '<a class="btn btn-mini update-task" href="javascript:void(0)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>';
+    }
+    protected function getRefreshTask()
+    {
+        return '<a class="btn btn-mini refresh-task" href="javascript:void(0)"><i class="fa fa-refresh" aria-hidden="true"></i></a>';
     }
     public function getTicketHeader($vProject,$vTicket)
     {

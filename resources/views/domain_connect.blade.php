@@ -130,8 +130,12 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
         }
         $(document).on('click','.post-data-send',this.sendData);
         $(document).on('click','.update-task',this.updateTask);
+        $(document).on('click','.refresh-task',this.refreshTask);
 
         this.binded = true;
+    };
+    DomainConnect.refreshTask = async (event) => {
+        $('.by-pass-cache').trigger('click');
     };
     DomainConnect.updateTask = async function(event){
 //        window.pjaxOffSetScrollTo = $(event.target).offset();
