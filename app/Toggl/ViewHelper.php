@@ -29,9 +29,13 @@ class ViewHelper
             $vLink = ob_get_clean();
         }
         else{
-            $vLink = "<a class='post-data-send' href='javascript:void(0)' data-post='$vDataHtml'>send</a>";
+            $vLink = "<span class='link-container'><a class='post-data-send' href='javascript:void(0)' data-post='$vDataHtml'>send</a> {$this->getUpdateTask()}</span>";
         }
         return $vLink;
+    }
+    protected function getUpdateTask()
+    {
+        return '<a class="btn btn-mini update-task" href="javascript:void(0)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>';
     }
     public function getTicketHeader($vProject,$vTicket)
     {

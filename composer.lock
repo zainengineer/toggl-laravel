@@ -778,12 +778,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zainengineer/toggl-api.git",
-                "reference": "9e268d701661ab4e55fd7281c8662c905fcd084b"
+                "reference": "e05ba2ac4e9a3b191ee6bb2e7c1fc87a645c9967"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zainengineer/toggl-api/zipball/9e268d701661ab4e55fd7281c8662c905fcd084b",
-                "reference": "9e268d701661ab4e55fd7281c8662c905fcd084b",
+                "url": "https://api.github.com/repos/zainengineer/toggl-api/zipball/e05ba2ac4e9a3b191ee6bb2e7c1fc87a645c9967",
+                "reference": "e05ba2ac4e9a3b191ee6bb2e7c1fc87a645c9967",
                 "shasum": ""
             },
             "require": {
@@ -820,7 +820,7 @@
             "support": {
                 "source": "https://github.com/zainengineer/toggl-api/tree/master"
             },
-            "time": "2017-06-18 17:12:03"
+            "time": "2017-07-01 08:01:25"
         },
         {
             "name": "mtdowling/cron-expression",

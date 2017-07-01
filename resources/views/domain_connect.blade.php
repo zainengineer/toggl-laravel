@@ -5,12 +5,13 @@
 <?php
 require_once public_path() . '/js/load.js';
 ?>
-    loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'],'jQuery');
-    loadjs.ready(['jQuery'],{
-        success: function() {
-            loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js'],'pjax');
-        }
-    });
+//    loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'],'jQuery');
+//    loadjs.ready(['jQuery'],{
+//        success: function() {
+//            loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js'],'pjax');
+//        }
+//    });
+    loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js'],'pjax');
     loadjs([
         'https://cdnjs.cloudflare.com/ajax/libs/js-sha1/0.4.1/sha1.min.js',
         'https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.8.4/js-yaml.min.js'
@@ -47,7 +48,7 @@ require_once public_path() . '/js/load.js';
     loadjs([
         'https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js',
     ],'free_load');
-    loadjs.ready(['jQuery','ClipBoard','localjs','cookie','misc'],{
+    loadjs.ready(['pjax','ClipBoard','localjs','cookie','misc'],{
         success: function() {
             jQuery(function(){
                 zClipBoardBind = new Clipboard('.clip-board-trigger');
@@ -72,7 +73,8 @@ require_once public_path() . '/js/load.js';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
 
 <iframe style="display:none;height:60px"  id="iframe_message" ></iframe>
 <div id="iframe-container"></div>
@@ -97,6 +99,13 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
 {{--<br/>--}}
 {{--Needs cross header requests enabled--}}
 {{--<a href="https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi/related?utm_source=chrome-app-launcher-info-dialog">cross origin extension</a>--}}
+<div style="display:none">
+    <div id="popUp" title="Popup">
+        <p>
+            example of popup
+        </p>
+    </div>
+</div>
 <script>
 
     DomainConnect = {};
@@ -113,10 +122,48 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
             this.sourceConnect(valueInCookie);
         }
         $(document).on('click','.post-data-send',this.sendData);
+        $(document).on('click','.update-task',this.updateTask);
 
         this.binded = true;
     };
-
+    DomainConnect.updateTask = async function(event){
+        alert('update task only supported by premium');
+        return ;
+        let data = jQuery(event.target).closest('.link-container').find('.post-data-send').data('post');
+        //        let promised = await Promise.resolve(jQuery.when(DomainConnect.promiseConfirm('testing')));
+        data.newDescription = window.prompt('description',data.description);
+        let ajaxConfig = {
+            url: '/togglUpdate',
+            method: "POST",
+            data: {togglData:data}
+        };
+        ajaxConfig.headers = {
+            'X-CSRF-TOKEN': '<?php echo csrf_token(); ?>'
+        };
+        let output = await Promise.resolve(jQuery.when($.ajax(ajaxConfig)));
+        $('.by-pass-cache').trigger('click');
+        console.log(output);
+    };
+    DomainConnect.promiseConfirm = function (customMessage){
+            let dfd = new jQuery.Deferred();
+            $("#popUp").html(customMessage);
+            $("#popUp").dialog({
+                resizable: false,
+                height: 240,
+                modal: true,
+                buttons: {
+                    "OK": function () {
+                        $(this).dialog("close");
+                        dfd.resolve();
+                    },
+                    Cancel: function () {
+                        $(this).dialog("close");
+                        dfd.reject();
+                    }
+                }
+            });
+            return dfd.promise();
+    };
     DomainConnect.sendData = function(event){
         var data = jQuery(event.target).data('post');
         this.sendMessage(data);

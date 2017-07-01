@@ -1,0 +1,13 @@
+.ticket-title{
+    color: grey;
+}
+.ticket-date{
+    color: purple;
+}
+
+.time-entry{
+    color: green;
+}
+.toggl-entry{
+    color: blue;
+}

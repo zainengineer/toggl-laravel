@@ -103,14 +103,14 @@ class TogglController extends Controller
         $aParam = [];
         $aParam['_by_pass_cache'] = 1;
         $vTitle = "By pass Cache";
-        $vLink = $this->replaceGetParametersLink($aParam, $vTitle);
+        $vLink = $this->replaceGetParametersLink($aParam, $vTitle," class = 'by-pass-cache' ");
         return $vLink;
     }
 
-    protected function replaceGetParametersLink($aParamValue, $vTitle)
+    protected function replaceGetParametersLink($aParamValue, $vTitle,$vAttributes ='')
     {
         $vUrl = $this->replaceGetParametersUrl($aParamValue);
-        $vLink = "<a href='$vUrl'>$vTitle</a>";
+        $vLink = "<a $vAttributes href='$vUrl'>$vTitle</a>";
         return $vLink;
     }
 
@@ -362,10 +362,22 @@ class TogglController extends Controller
     {
         return isset($_GET['sunday_tolerance']) ? $_GET['sunday_tolerance'] : $this->iDefaultMondayToleranceHours;
     }
-    public function testActionZ()
+    public function togglUpdatePost(Toggl\ClientProxy $oProxy, Request $oRequest, \Illuminate\Http\Response $oResponse)
     {
-        $oHelper = $this->getTimeEntriesHelper();
-        $t = $oHelper->getProjects();
+        $aToggleEntry = $oRequest->input('togglData');
+        $output = $oProxy->updateTask($aToggleEntry['toggl-id'],$aToggleEntry['newDescription']);
+        //this is a dummy line so breakpoint can be placed on this line
+        return response()->json([
+            'input' => $aToggleEntry,
+            'output' => $output,
+        ]);
+    }
+    public function testActionZ(Toggl\ClientProxy $oProxy)
+    {
+        $task = $oProxy->getTask('631248913');
+        $task = $oProxy->getTask('147ef021a0c89807c84df8f806480793');
+//        $oHelper = $this->getTimeEntriesHelper();
+//        $t = $oHelper->getProjects();
 //        $vYaml = file_get_contents(public_path() . '/test.yaml');
 //        $value = Yaml::parse($vYaml);
 //        dd($value);

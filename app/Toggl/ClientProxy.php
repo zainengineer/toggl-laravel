@@ -3,6 +3,13 @@
 namespace App\Toggl;
 use App\Http\Controllers\TogglController;
 use Illuminate\Support\Facades\Cache;
+
+/**
+ * Class ClientProxy
+ * @package App\Toggl
+ *
+ * @mixin \MorningTrain\TogglApi\TogglApi
+ */
 class ClientProxy
 {
     /**
@@ -11,11 +18,13 @@ class ClientProxy
     protected $bEnableCache;
     protected $oLastCommand;
     /**
-     * @mixing \MorningTrain\TogglApi\TogglApi
      * @var \MorningTrain\TogglApi\TogglApi
      */
     protected $oClient;
+    /** @var  ToolHelper */
     protected $oToolHelper;
+    /** @var \Illuminate\Http\Request  */
+    protected $oRequest;
 
     public function __construct(\Illuminate\Http\Request $oRequest, ToolHelper $oToolHelper)
     {
@@ -49,16 +58,23 @@ class ClientProxy
         if ($this->cacheMethod($methodName) && $vCacheKey){
             $cachedValue =  Cache::get($vCacheKey);
             if ($cachedValue){
-                return $cachedValue;
+//                return $cachedValue;
             }
         }
-        $return = call_user_func_array(array($this->oClient, $methodName), $args);
+        try{
+            $return = call_user_func_array(array($this->oClient, $methodName), $args);
+        }
+        catch (\Exception $e){
+            $vRequest = (new \Namshi\Cuzzle\Formatter\CurlFormatter())->format($this->oClient->oLastRequest, []);
+            throw $e;
+        }
+        $vRequest = (new \Namshi\Cuzzle\Formatter\CurlFormatter())->format($this->oClient->oLastRequest, []);
+
 //        $oRequest = $this->oLastCommand->getRequest();
 //        require_once app_path() . '/../vendor/namshi/cuzzle/src/Namshi/Guzzle/Formatter/CurlShellFormatter.php';
 //        $vCommand =  (new CurlShellFormatter())->format($oRequest);
         //this is a dummy line so breakpoint can be placed on this line
 
-        $vRequest = (new \Namshi\Cuzzle\Formatter\CurlFormatter())->format($this->oClient->oLastRequest, []);
 
         if ($vCacheKey){
             Cache::put($vCacheKey,$return,20);
@@ -71,10 +87,11 @@ class ClientProxy
             return true;
         }
     }
-    public function updateTask($vEntryId,$vTaskMessage)
-    {
-//        $this->oClient->updateTask($vEntryId, $vTaskMessage);
-    }
+//    public function updateTask($vEntryId,$vTaskMessage)
+//    {
+//        return $this->oClient->updateTask($vEntryId, $vTaskMessage);
+////        return "not updated $vEntryId $vTaskMessage";
+//    }
     protected function getCacheKey($methodName,$args)
     {
         $vMethodType = substr($methodName,0,3);
