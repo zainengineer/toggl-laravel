@@ -84,10 +84,14 @@ JiraApi.processWorkLog = function (project,ticketNumber) {
 };
 
 JiraApi.postTime = function(project,timeObject){
+    if (!timeObject.jira_time){
+        alert('no time entered for this ticket');
+        console.error('no time provided');
+        return ;
+    }
     let jiraTicket = timeObject.ticket;
     let baseUrl = this.getBaseUrl(project) + '/issue/' + jiraTicket + '/worklog';
     this.lastUpdatedTicket = jiraTicket;
-    debugger;
     let config = this.getAjaxConfig();
     config.url = baseUrl;
     config.method = "POST";

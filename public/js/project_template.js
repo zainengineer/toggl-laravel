@@ -82,7 +82,9 @@ ZProjectTemplate.getProject = function (ticket){
 ZProjectTemplate.setProjectForTicket = function (project, ticket){
     if (this.projectTicketMap.hasOwnProperty(ticket)){
         if (this.projectTicketMap[ticket] != project){
-            throw new Error('cannot map ' + ticket + ' to ' + project + ' already mapped with ' + this.projectTicketMap[ticket]);
+            let message = 'cannot map ' + ticket + ' to ' + project + ' already mapped with ' + this.projectTicketMap[ticket];
+            console.error(message);
+            // throw new Error(message);
         }
     }
     else{

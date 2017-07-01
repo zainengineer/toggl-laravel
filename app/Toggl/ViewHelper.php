@@ -26,7 +26,7 @@ class ViewHelper
                data-time-entry="<?php echo $vDataHtml; ?>" href="javascript:void(0)">Jira<i class="fa fa-clock-o" aria-hidden="true"></i></a>
             <?php
 
-            $vLink = ob_get_clean();
+            $vLink = ob_get_clean() . " {$this->getRefreshTask()}";
         }
         else{
             $vLink = "<span class='link-container'><a class='post-data-send' href='javascript:void(0)' data-post='$vDataHtml'>send</a> {$this->getRefreshTask()}</span>";
