@@ -5,12 +5,12 @@
 <?php
 require_once public_path() . '/js/load.js';
 ?>
-//    loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'],'jQuery');
-//    loadjs.ready(['jQuery'],{
-//        success: function() {
-//            loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js'],'pjax');
-//        }
-//    });
+    loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'],'jQuery');
+    loadjs.ready(['jQuery'],{
+        success: function() {
+            loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js'],'pjax');
+        }
+    });
     loadjs(['https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.js'],'pjax');
     loadjs([
         'https://cdnjs.cloudflare.com/ajax/libs/js-sha1/0.4.1/sha1.min.js',
