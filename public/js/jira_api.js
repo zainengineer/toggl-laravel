@@ -66,7 +66,7 @@ JiraApi.processWorkLogPreferCached = function (project,ticket){
         return ZProjectTemplate.updateTicket(false,ticket,project,worklog);
     }
     else{
-        this.getWorkLog(project,ticket);
+        this.processWorkLog(project,ticket);
     }
 
 };
