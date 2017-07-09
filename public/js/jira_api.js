@@ -61,6 +61,18 @@ JiraApi.getTicketInfo = function (project,ticketNumber) {
     this.unResolvedTickets++;
     this.handleRequest(project,ticketNumber,config);
 };
+JiraApi.deleteWorkLog = function (project,ticketNumber,workLogId) {
+    if (!this.initialized){
+        // reject('not initialized');
+        throw 'not initialized';
+    }
+    let baseUrl = this.getBaseUrl(project) + '/issue/' + ticketNumber + '/worklog/' + workLogId;
+    let config = this.getAjaxConfig();
+    config.url = baseUrl;
+    config.method = "DELETE";
+    ZProjectTemplate.setProjectForTicket(project,ticketNumber);
+    this.handleRequest(project,ticketNumber,config);
+};
 JiraApi.processWorkLogPreferCached = function (project,ticket){
     let worklog = JiraCache.getWorkLog(project,ticket);
     if (worklog){
@@ -173,6 +185,7 @@ JiraApi.getAjaxConfig = function () {
 JiraApi.allRequestsProcessed = () =>{
     this.unResolvedTickets--;
     if (!this.unResolvedTickets){
+        ProgressDetect.flagDuplicateHashes();
         ProgressDetect.trackEntered();
     }
 
@@ -181,6 +194,7 @@ JiraApi.processResponse = function(event){
 
     let output = ZJsTools.checkNested(event,'data.output',true) ?  event.data.output : {};
     let meta = ZJsTools.checkNested(event,'data.dataIn.meta',true) ?  event.data.dataIn.meta : {};
+    let method = ZJsTools.checkNested(event,'data.dataIn.config.method',true) ?  event.data.dataIn.config.method : {};
     if (output && ZJsTools.checkNested(output,'fields.worklog.worklogs')){
         let ticketNumber = meta.ticket;
         let project = meta.project;
@@ -198,6 +212,9 @@ JiraApi.processResponse = function(event){
     else if (output && output.worklogs){
         JiraCache.saveWorkLog(meta.project,meta.ticket,output.worklogs);
         ZProjectTemplate.updateTicket(false,meta.ticket,meta.project,output.worklogs);
+    }
+    else if (jQuery.isEmptyObject(output) && (method == 'DELETE')){
+        this.getTicketInfo(meta.project ,meta.ticket);
     }
     else{
         debugger;

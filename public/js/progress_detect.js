@@ -1,7 +1,7 @@
 ProgressDetect = {};
 ProgressDetect.duplicateHashes = {};
 ProgressDetect.resolvedDates = {};
-ProgressDetect.findDuplicateHashes = () => {
+ProgressDetect.flagDuplicateHashes = () => {
     let $entries = $('.time-entry.zhash');
     $entries.removeClass('red');
     $entries.each(function (index) {

@@ -117,3 +117,14 @@ ZProjectTemplate.showAllTickets = function()
     }.bind(this));
     JiraApi.allRequestsProcessed();
 };
+ZProjectTemplate.detectDelete = (target)=>{
+    let $target = $(target);
+    let worklogId = $target.data('work-log-id');
+    let $workLogContainer = $target.closest('.work-log-container');
+    let project = $workLogContainer.data('project');
+    let ticket = $workLogContainer.data('ticket');
+    let result = confirm("Want to delete " + ticket + " ?");
+    if (result) {
+        JiraApi.deleteWorkLog(project,ticket,worklogId);
+    }
+};
