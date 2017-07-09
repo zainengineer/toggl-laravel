@@ -45,3 +45,17 @@ else{
         window.parent.postMessage({type:'ready'},'*');
     });
 }
+window.readySent = false;
+window.showReady = function(){
+    //only trigger it once for one jira
+    if (window.readySent){
+        return ;
+    }
+    window.readySent = true;
+    window.parent.postMessage({type:'ready'},'*');
+};
+
+//fallback if dom loaded does not work
+window.setTimeout(function(){
+    window.showReady();
+},5000);
