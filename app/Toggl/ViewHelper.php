@@ -50,8 +50,12 @@ class ViewHelper
         $vTicketEntity = htmlentities($vTicket);
         $vProjectEntity = htmlentities($vProject);
         ?>
-        <span class="ticket-title <?php echo "$vTicketEntity $vProjectEntity"; ?>"><?php echo $vTicketEntity; ?></span>
-        <span class="work-log-container <?php echo  "$vTicketEntity $vProjectEntity"; ?>" data-ticket="<?php echo $vTicketEntity; ?>" data-project = "<?php echo $vProjectEntity; ?>"></span>
+        <div class="card blue-grey darken-1">
+            <div class="card-content white-text">
+                <span class="card-title ticket-title <?php echo "$vTicketEntity $vProjectEntity"; ?>"><?php echo $vTicketEntity; ?></span>
+                <span class="work-log-container <?php echo  "$vTicketEntity $vProjectEntity"; ?>" data-ticket="<?php echo $vTicketEntity; ?>" data-project = "<?php echo $vProjectEntity; ?>"></span>
+            </div>
+        </div>
         <?php
         $vTicketHeader = ob_get_clean();
         return $vTicketHeader;
@@ -65,5 +69,49 @@ class ViewHelper
                     <div class='col-8'>{$aSingleTimeEntry['description']}</div>
                     <div class='col'>{$this->getTimeLink($aSingleTimeEntry)}</div>
                 </div>";
+    }
+
+    public function getAllEntries($aDisplayEntries)
+    {
+        $output = '';
+        foreach ($aDisplayEntries as $aProject => $aProjectInfo) {
+            ;
+            if (!($aTicketEntries = $aProjectInfo['tickets'])) {
+                continue;
+            }
+            $output .= $aProjectInfo['meta']['project'] . "\n";
+            foreach ($aTicketEntries as $vTicket => $aTicketInfo) {
+                if (!($aDateEntries = $aTicketInfo['date_entries'])) {
+                    continue;
+                }
+                $vTicketBlock = '';
+                foreach ($aDateEntries as $aDateInfo)
+                {
+                    if (!($aTimeEntries = $aDateInfo['time_entries'])) {
+                        continue;
+                    }
+                    $vTicketBlock .= $aDateInfo['meta']['date'];
+                    foreach ($aTimeEntries as $vTimeEntry) {
+                        $vTicketBlock.= $vTimeEntry;
+                    }
+                    if (isset($aDateInfo['meta']['total'])){
+                        $vTicketBlock.= $aDateInfo['meta']['total'];
+                    }
+                }
+                ob_start();
+                echo $aTicketInfo['meta']['ticket'];
+                ?>
+                <div class="card blue-grey lighten-4">
+                    <div class="card-content white-text">
+<!--                        meta tag finished-->
+                        <?php echo $vTicketBlock; ?>
+                    </div>
+                </div>
+                <?php
+                $vTicketBlock = ob_get_clean();
+                $output .= $vTicketBlock;
+            }
+        }
+        return $output;
     }
 }

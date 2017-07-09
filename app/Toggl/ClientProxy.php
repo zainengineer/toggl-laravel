@@ -58,7 +58,7 @@ class ClientProxy
         if ($this->cacheMethod($methodName) && $vCacheKey){
             $cachedValue =  Cache::get($vCacheKey);
             if ($cachedValue){
-//                return $cachedValue;
+                return $cachedValue;
             }
         }
         try{

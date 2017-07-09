@@ -203,12 +203,11 @@ class TogglController extends Controller
         $fWeekGrandTotal = 0;
         $fClosestMonday = $this->getClosestMondayStamp();
         $fClosestSunday = $this->getClosestSundayStamp();
-        ob_start();
+        $aDisplayEntries = [];
         foreach ($aPersonInfo as $vProjectName => $aProjectInfo) {
-            $bShowProject = true;
+            $aDisplayEntries[$vProjectName] = ['meta'=> [],'tickets'=>[]];
             foreach ($aProjectInfo as $ticket => $aTicketEntries) {
                 $vTicket = $oHelper->isTicket($ticket) ? $ticket : 'No Ticket';
-                $bShowTicket = true;
                 foreach ($aTicketEntries as $vDate => $aTimeEntries) {
                     if (strtotime($vDate) < $fClosestMonday) {
                         continue;
@@ -216,28 +215,37 @@ class TogglController extends Controller
                     if ($fClosestSunday && (strtotime($vDate) > $fClosestSunday)) {
                         continue;
                     }
-                    if ($bShowProject) {
-                        echo "<div>$vProjectName</div>";
-                        $bShowProject = false;
-
+                    if (!isset($aDisplayEntries[$vProjectName]['meta']['project'])) {
+                        $aDisplayEntries[$vProjectName]['meta']['project'] = "<div>$vProjectName</div>";
                     }
-                    if ($bShowTicket) {
-                        echo $this->oViewHelper->getTicketHeader($vProjectName,$vTicket);
-                        $bShowTicket = false;
+                    if (!isset($aDisplayEntries[$vProjectName]['tickets'][$vTicket])) {
+                        $aDisplayEntries[$vProjectName]['tickets'][$vTicket] =
+                          ['meta'           => [
+                            'ticket' => $this->oViewHelper->getTicketHeader($vProjectName, $vTicket),
+                          ], 'date_entries' => []];
+                    }
+                    if (!isset($aDisplayEntries[$vProjectName]['tickets'][$vTicket])) {
+                        $aDisplayEntries[$vProjectName]['tickets'][$vTicket] =
+                          ['meta'           => [
+                            'ticket' => $this->oViewHelper->getTicketHeader($vProjectName, $vTicket),
+                          ], 'date_entries' => []];
+                    }
+                    if (!isset($aDisplayEntries[$vProjectName]['tickets'][$vTicket]['date_entries'][$vDate])){
+                        $aDisplayEntries[$vProjectName]['tickets'][$vTicket]['date_entries'][$vDate] =
+                          ['meta' => ['date' => "<div class='ticket-date'>$vDate</div>"],
+                           'time_entries' => []];
                     }
                     if (!isset($aDayGrandTotal[$vDate])) {
                         $aDayGrandTotal[$vDate] = 0;
                     }
                     $fTicketTotal = 0;
                     $fDuration = 0;
-                    echo "<div class='ticket-date'>$vDate</div>";
                     foreach ($aTimeEntries as $aSingleTimeEntry) {
+                        $aDisplayEntries[$vProjectName]['tickets'][$vTicket]['date_entries'][$vDate]['time_entries'][] =$this->oViewHelper->getTogglEntry($fDuration,$aSingleTimeEntry);
                         $fDuration = $aSingleTimeEntry['duration'];
                         $fTicketTotal += $fDuration;
                         $aDayGrandTotal[$vDate] += $fDuration;
                         $fWeekGrandTotal += $fDuration;
-
-                        echo $this->oViewHelper->getTogglEntry($fDuration,$aSingleTimeEntry);
                     }
                     if (abs($fDuration - $fTicketTotal) > 0.0001) {
                         $vJiraTime = $oHelper->getJiraTime($fTicketTotal,true);
@@ -248,13 +256,14 @@ class TogglController extends Controller
                             $aTicketSum['jira_time'] = $oHelper->getJiraTime($fTicketTotal,false);
                             $vTimeLink = $this->oViewHelper->getTimeLink($aTicketSum);
                         }
-                        echo "<pre>    $fTicketTotal\t$vJiraTime $vTimeLink \n</pre>";
+                        //jira total of a ticket for a day
+                        $aDisplayEntries[$vProjectName]['tickets'][$vTicket]['date_entries'][$vDate]['meta']['total'] ="<pre>    $fTicketTotal\t$vJiraTime $vTimeLink \n</pre>";
                     }
                 }
             }
         }
         ksort($aDayGrandTotal);
-        $vContents = ob_get_clean();
+        $vContents = $this->oViewHelper->getAllEntries($aDisplayEntries);
         echo trim($vContents);
         echo "<pre>\n\n";
         foreach ($aDayGrandTotal as $vDate => $fDuration) {
