@@ -78,6 +78,7 @@ class TimeEntries
             }
 
             $fDuration = $this->secondsToHours($fSeconds);
+            $iStartStamp = strtotime($aTime['start']);
             $aRow = [
                 'toggl-id'     => $aTime['id'],
                 'toggl-guid'   => $aTime['guid'],
@@ -91,7 +92,8 @@ class TimeEntries
                  * default time zone of the app is Adelaide
                  * config/app.php:67
                  */
-                'actual_start' => date('c', strtotime($aTime['start'])),
+                'actual_start' => date('c', $iStartStamp ),
+                'unix_stamp' => $iStartStamp,
                 'stop'         => date('c', strtotime($aTime['stop'])),
             ];
             $aRow['jira_start'] =$this->getJiraHelper()->jiraRestDateFormat($aRow['actual_start']);

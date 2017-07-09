@@ -56,6 +56,7 @@ ZProjectTemplate.filterWorkLog = function (worklogs) {
         let logDate = new Date(worklog.started);
         if ((!this.jsonMeta.start_date || (logDate >= startDate))
             && (!this.jsonMeta.end_date || (logDate <= endDate))) {
+            worklog.zhash = sha1(worklog.comment + worklog.started + worklog.timeSpent);
             filteredWorkLogs.push(worklog);
         }
     }
@@ -114,4 +115,5 @@ ZProjectTemplate.showAllTickets = function()
         let project =  $(el).data( "project" );
         this.updateTicketPreferCache(project,ticket);
     }.bind(this));
+    JiraApi.allRequestsProcessed();
 };

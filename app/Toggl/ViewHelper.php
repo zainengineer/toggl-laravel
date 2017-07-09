@@ -60,8 +60,10 @@ class ViewHelper
         $vTicketHeader = ob_get_clean();
         return $vTicketHeader;
     }
-    public function getTogglEntry($fDuration,$aSingleTimeEntry)
+    public function getTogglEntry($aSingleTimeEntry)
     {
+        $fDuration = $aSingleTimeEntry['duration'];
+//        $aSingleTimeEntry['unix_stamp'] = strtotime($aSingleTimeEntry[''])
         $vJiraSingleTime = $this->oHelper->getJiraTime($fDuration,true);
         return "<div class='toggl-entry row'>
                     <div class='col'>$fDuration</div>

@@ -8,6 +8,7 @@ JiraApi.iframe = null;
 JiraApi.lastUpdatedTicket = false;
 JiraApi.lastProject = false;
 JiraApi.configObject = {};
+JiraApi.unResolvedTickets = 0;
 JiraApi.init = function (baseUrl, authKey, sampleTicket,iframeId,iframeUrl) {
     this.initIframe();
     this.initialized = true;
@@ -57,6 +58,7 @@ JiraApi.getTicketInfo = function (project,ticketNumber) {
     config.url = baseUrl;
     config.method = "GET";
     ZProjectTemplate.setProjectForTicket(project,ticketNumber);
+    this.unResolvedTickets++;
     this.handleRequest(project,ticketNumber,config);
 };
 JiraApi.processWorkLogPreferCached = function (project,ticket){
@@ -168,6 +170,13 @@ JiraApi.getAjaxConfig = function () {
     }
     return this._ajaxConfig;
 };
+JiraApi.allRequestsProcessed = () =>{
+    this.unResolvedTickets--;
+    if (!this.unResolvedTickets){
+        ProgressDetect.trackEntered();
+    }
+
+};
 JiraApi.processResponse = function(event){
 
     let output = ZJsTools.checkNested(event,'data.output',true) ?  event.data.output : {};
@@ -176,7 +185,8 @@ JiraApi.processResponse = function(event){
         let ticketNumber = meta.ticket;
         let project = meta.project;
         JiraCache.saveTicket(project,ticketNumber,output);
-        ZProjectTemplate.updateTicket(output,ticketNumber,project)
+        ZProjectTemplate.updateTicket(output,ticketNumber,project);
+        this.allRequestsProcessed();
     }
     else if(output && output.timeSpent){
         this.getTicketInfo(meta.project ,meta.ticket);

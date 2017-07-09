@@ -241,14 +241,13 @@ class TogglController extends Controller
                     $fTicketTotal = 0;
                     $fDuration = 0;
                     foreach ($aTimeEntries as $aSingleTimeEntry) {
-                        $aDisplayEntries[$vProjectName]['tickets'][$vTicket]['date_entries'][$vDate]['time_entries'][] =$this->oViewHelper->getTogglEntry($fDuration,$aSingleTimeEntry);
+                        $aDisplayEntries[$vProjectName]['tickets'][$vTicket]['date_entries'][$vDate]['time_entries'][] =$this->oViewHelper->getTogglEntry($aSingleTimeEntry);
                         $fDuration = $aSingleTimeEntry['duration'];
                         $fTicketTotal += $fDuration;
                         $aDayGrandTotal[$vDate] += $fDuration;
                         $fWeekGrandTotal += $fDuration;
                     }
                     if (abs($fDuration - $fTicketTotal) > 0.0001) {
-                        $vJiraTime = $oHelper->getJiraTime($fTicketTotal,true);
                         $vTimeLink = "";
                         if (!empty($aSingleTimeEntry)){
                             $aTicketSum  = $aSingleTimeEntry;
@@ -257,6 +256,7 @@ class TogglController extends Controller
                             $vTimeLink = $this->oViewHelper->getTimeLink($aTicketSum);
                         }
                         //jira total of a ticket for a day
+                        $vJiraTime = $oHelper->getJiraTime($fTicketTotal,true);
                         $aDisplayEntries[$vProjectName]['tickets'][$vTicket]['date_entries'][$vDate]['meta']['total'] ="<pre>    $fTicketTotal\t$vJiraTime $vTimeLink \n</pre>";
                     }
                 }

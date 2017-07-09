@@ -51,7 +51,8 @@ require_once public_path() . '/js/load.js';
         '/js/jira_api.js?hash=z_hash',
         '/js/jira_cache.js?hash=z_hash',
         '/js/object_state.js?hash=z_hash',
-        '/js/project_template.js?hash=z_hash'
+        '/js/project_template.js?hash=z_hash',
+        '/js/progress_detect.js?hash=z_hash',
     ],'localjs');
     loadjs([
         'https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.3/js.cookie.min.js'
