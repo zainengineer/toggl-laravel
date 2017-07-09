@@ -53,7 +53,7 @@ ProgressDetect.compareTogglJira = () => {
         let zhash2  = $this.data('zhash2');
         let $send = $('.jira-send-button.zhash2-' +zhash2);
         if ($send.length){
-            $send.addClass('red');
+            $send.addClass('grey');
         }
 
     });

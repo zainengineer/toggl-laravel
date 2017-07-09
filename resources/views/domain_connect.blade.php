@@ -138,6 +138,10 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
         this.binded = true;
     };
     DomainConnect.refreshTask = async (event) => {
+        let target = $(event.target);
+        let ticket = target.data('ticket');
+        let project = target.data('project');
+        JiraApi.getTicketInfo(project ,ticket);
         $('.by-pass-cache').trigger('click');
     };
     DomainConnect.updateTask = async function(event){

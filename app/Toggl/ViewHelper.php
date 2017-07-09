@@ -26,10 +26,10 @@ class ViewHelper
                data-time-entry="<?php echo $vDataHtml; ?>" href="javascript:void(0)">Jira<i class="fa fa-clock-o" aria-hidden="true"></i></a>
             <?php
 
-            $vLink = ob_get_clean() . " {$this->getRefreshTask()}";
+            $vLink = ob_get_clean() . " {$this->getRefreshTask($aSingleTimeEntry)}";
         }
         else{
-            $vLink = "<span class='link-container'><a class='post-data-send' href='javascript:void(0)' data-post='$vDataHtml'>send</a> {$this->getRefreshTask()}</span>";
+            $vLink = "<span class='link-container'><a class='post-data-send' href='javascript:void(0)' data-post='$vDataHtml'>send</a> {$this->getRefreshTask($aSingleTimeEntry)}</span>";
         }
         return $vLink;
     }
@@ -37,9 +37,12 @@ class ViewHelper
     {
         return '<a class="btn btn-mini update-task" href="javascript:void(0)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>';
     }
-    protected function getRefreshTask()
+    protected function getRefreshTask($aSingleTimeEntry)
     {
-        return '<a class="btn btn-mini refresh-task" href="javascript:void(0)"><i class="fa fa-refresh" aria-hidden="true"></i></a>';
+        $vTicketEntity = htmlentities($aSingleTimeEntry['ticket']);
+        $vProjectEntity = htmlentities($aSingleTimeEntry['project']);
+        return "<a class='btn btn-mini refresh-task' href='javascript:void(0)'
+data-ticket='$vTicketEntity' data-project = '$vProjectEntity'><i class='fa fa-refresh' aria-hidden='true'></i></a>";
     }
     public function getTicketHeader($vProject,$vTicket)
     {
