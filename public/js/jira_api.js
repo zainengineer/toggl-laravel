@@ -35,9 +35,10 @@ JiraApi.testTicket = function () {
 };
 
 
-JiraApi.handleRequest = function (project,ticket,config){
+       JiraApi.handleRequest = function (project,ticket,config,additional_meta){
     project = this.getProjectFromTicket(ticket, project);
-    let message = JSON.stringify({config:config,meta:{project:project,ticket:ticket}});
+    let message = JSON.stringify({config:config,
+        meta:{project:project,ticket:ticket,additional_meta:additional_meta}});
     this.getIframe(project).contentWindow.postMessage(message,'*');
     // try {
     //     let output = await Promise.resolve(jQuery.when($.ajax(config)));
@@ -59,7 +60,7 @@ JiraApi.getTicketInfo = function (project,ticketNumber) {
     config.method = "GET";
     ZProjectTemplate.setProjectForTicket(project,ticketNumber);
     this.unResolvedTickets++;
-    this.handleRequest(project,ticketNumber,config);
+    this.handleRequest(project,ticketNumber,config,{by_pass_cache:true});
 };
 JiraApi.deleteWorkLog = function (project,ticketNumber,workLogId) {
     if (!this.initialized){
@@ -199,7 +200,7 @@ JiraApi.processResponse = function(event){
         let ticketNumber = meta.ticket;
         let project = meta.project;
         JiraCache.saveTicket(project,ticketNumber,output);
-        ZProjectTemplate.updateTicket(output,ticketNumber,project);
+        ZProjectTemplate.updateTicket(output,ticketNumber,project,null,meta);
         this.allRequestsProcessed();
     }
     else if(output && output.timeSpent){
@@ -210,8 +211,9 @@ JiraApi.processResponse = function(event){
         ZProjectTemplate.checkPointIncrement();
     }
     else if (output && output.worklogs){
-        JiraCache.saveWorkLog(meta.project,meta.ticket,output.worklogs);
-        ZProjectTemplate.updateTicket(false,meta.ticket,meta.project,output.worklogs);
+        let worklogs = this.removeIncorrectWorkLog(output.worklogs);
+        JiraCache.saveWorkLog(meta.project,meta.ticket,worklogs);
+        ZProjectTemplate.updateTicket(false,meta.ticket,meta.project,worklogs);
     }
     else if (jQuery.isEmptyObject(output) && (method == 'DELETE')){
         this.getTicketInfo(meta.project ,meta.ticket);
@@ -221,7 +223,17 @@ JiraApi.processResponse = function(event){
         console.log(event.data);
     }
 };
-
+JiraApi.removeIncorrectWorkLog = function(worklogs){
+    let filteredWorkLogs = [];
+    for (let i in worklogs) {
+        let worklog = worklogs[i];
+        let authorName = worklog.author.name;
+        if (authorName =='zain') {
+            filteredWorkLogs.push(worklog);
+        }
+    }
+    return filteredWorkLogs;
+};
 window.addEventListener('message', function (event) {
     let url = event.origin;
     let hostname = (new URL(url)).hostname;

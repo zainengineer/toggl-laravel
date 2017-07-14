@@ -19,7 +19,7 @@ ZProjectTemplate.workLogsRegister = function()
 ZProjectTemplate.callBack = function (key,$selector,data){
     // this.regi
 };
-ZProjectTemplate.updateTicket = function(ticketInfo,ticket,project,worklogsGiven){
+ZProjectTemplate.updateTicket = function(ticketInfo,ticket,project,worklogsGiven,meta){
     this.workLogsRegister();
     let worklogs;
     let processed = false;
@@ -29,6 +29,11 @@ ZProjectTemplate.updateTicket = function(ticketInfo,ticket,project,worklogsGiven
             if (ticketInfo){
                 let title = ticketInfo.fields.summary;
                 $('.ticket-title.' + project + '.' + ticket).html(ticket + ': ' + title);
+            }
+            if (ZJsTools.checkNested(meta,'additional_meta.by_pass_cache',false)
+                && (meta.additional_meta.by_pass_cache)){
+                JiraApi.processWorkLog(project,ticket);
+                return ;
             }
             processed = JiraApi.processWorkLogPreferCached(project,ticket);
             if (processed){
