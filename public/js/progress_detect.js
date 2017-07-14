@@ -71,10 +71,15 @@ ProgressDetect.strToTime = async(stringDate) => {
     return ProgressDetect.resolvedDates[stringDate];
 };
 ProgressDetect.resolveAllDates = async () => {
+    ProgressDetect.restoreFromCache();
     let $entries = $('.time-entry.zhash');
     var DateList = {};
     $entries.each(function (index) {
         let started = $(this).data('started');
+        //already value present
+        if (ProgressDetect.resolvedDates.hasOwnProperty(started)){
+            return true;
+        }
         // let comment = $(this).data('comment');
         // let timeSpent = $(this).data('timeSpent');
         DateList[started] = started;
@@ -86,8 +91,21 @@ ProgressDetect.resolveAllDates = async () => {
     }
     return Promise.all(PromiseList);
 };
+ProgressDetect.saveDatesInCache = function () {
+    ZStorage.saveObject('strtotime',ProgressDetect.resolvedDates);
+};
+ProgressDetect.restoreFromCache = function () {
+    if (!$.isEmptyObject(ProgressDetect.resolvedDates)) {
+        return;
+    }
+    let strtotime = ZStorage.getObject('strtotime');
+    if (strtotime) {
+        ProgressDetect.resolvedDates = strtotime;
+    }
+};
 ProgressDetect.trackEntered = ()=>{
     let allPromise =ProgressDetect.resolveAllDates().then(()=>{
+        ProgressDetect.saveDatesInCache();
         ProgressDetect.addWorkLogHashes();
         ProgressDetect.compareTogglJira();
     });
