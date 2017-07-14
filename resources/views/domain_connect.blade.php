@@ -139,6 +139,9 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
     };
     DomainConnect.refreshTask = async (event) => {
         let target = $(event.target);
+        if ((target).prop("tagName").toLowerCase() == 'i'){
+            target = target.parent();
+        }
         let ticket = target.data('ticket');
         let project = target.data('project');
         JiraApi.getTicketInfo(project ,ticket);
