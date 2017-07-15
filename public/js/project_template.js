@@ -113,6 +113,7 @@ ZProjectTemplate.showAllTicketsOnce = function(){
 };
 ZProjectTemplate.showAllTickets = function()
 {
+    JiraApi.batchInProcess = true;
     this.workLogsRegister();
     this.jsonMeta = JSON.parse($('#injected-json').val());
     jQuery('.work-log-container').each(function(index, el ){
@@ -130,6 +131,12 @@ ZProjectTemplate.detectDelete = (target)=>{
     let ticket = $workLogContainer.data('ticket');
     let result = confirm("Want to delete " + ticket + " ?");
     if (result) {
+        JiraApi.batchInProcess = false;
         JiraApi.deleteWorkLog(project,ticket,worklogId);
     }
+};
+ZProjectTemplate.clickByPass = ()=>{
+    $.pjax.defaults.push = false;
+    $('.by-pass-cache').trigger('click');
+    $.pjax.defaults.push = true;
 };

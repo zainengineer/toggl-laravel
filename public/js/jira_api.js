@@ -9,6 +9,7 @@ JiraApi.lastUpdatedTicket = false;
 JiraApi.lastProject = false;
 JiraApi.configObject = {};
 JiraApi.unResolvedTickets = 0;
+JiraApi.batchInProcess = false;
 JiraApi.init = function (baseUrl, authKey, sampleTicket,iframeId,iframeUrl) {
     this.initIframe();
     this.initialized = true;
@@ -183,9 +184,23 @@ JiraApi.getAjaxConfig = function () {
     }
     return this._ajaxConfig;
 };
-JiraApi.allRequestsProcessed = () =>{
-    this.unResolvedTickets--;
-    if (!this.unResolvedTickets){
+JiraApi.allRequestsProcessed = (noRepeat) =>{
+    if (!JiraApi.batchInProcess){
+        ProgressDetect.flagDuplicateHashes();
+        ProgressDetect.trackEntered();
+        if (!noRepeat) {
+            window.setTimeout(JiraApi.allRequestsProcessed.bind(null, true), 700);
+            window.setTimeout(JiraApi.allRequestsProcessed.bind(null, true), 2000);
+        }
+        return ;
+    }
+
+    JiraApi.unResolvedTickets--;
+    if (JiraApi.unResolvedTickets < 0) {
+        JiraApi.unResolvedTickets = 0;
+    }
+    if (!JiraApi.unResolvedTickets){
+        console.log('processing requests');
         ProgressDetect.flagDuplicateHashes();
         ProgressDetect.trackEntered();
     }
@@ -211,12 +226,15 @@ JiraApi.processResponse = function(event){
         ZProjectTemplate.checkPointIncrement();
     }
     else if (output && output.worklogs){
+        this.allRequestsProcessed();
         let worklogs = this.removeIncorrectWorkLog(output.worklogs);
         JiraCache.saveWorkLog(meta.project,meta.ticket,worklogs);
         ZProjectTemplate.updateTicket(false,meta.ticket,meta.project,worklogs);
     }
     else if (jQuery.isEmptyObject(output) && (method == 'DELETE')){
+        this.allRequestsProcessed();
         this.getTicketInfo(meta.project ,meta.ticket);
+        ZProjectTemplate.clickByPass();
     }
     else{
         debugger;
@@ -234,6 +252,7 @@ JiraApi.removeIncorrectWorkLog = function(worklogs){
     }
     return filteredWorkLogs;
 };
+
 window.addEventListener('message', function (event) {
     let url = event.origin;
     let hostname = (new URL(url)).hostname;

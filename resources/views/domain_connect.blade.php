@@ -28,7 +28,7 @@ require_once public_path() . '/js/load.js';
                 window.pjaxOffSetScrollTop = (document.documentElement.scrollTop || document.body.scrollTop);
                 $('.loading').show()
             });
-            $(document).on('pjax:complete', function() {
+            $(document).on('pjax:complete', function(xhr,textStatus,options) {
                 $('.loading').hide();
                 ZProjectTemplate.showAllTickets();
                 if (window.pjaxOffSetScrollTop){
@@ -144,13 +144,14 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
         }
         let ticket = target.data('ticket');
         let project = target.data('project');
+        ZProjectTemplate.clickByPass();
+        JiraApi.batchInProcess = false;
         JiraApi.getTicketInfo(project ,ticket);
-        $('.by-pass-cache').trigger('click');
     };
     DomainConnect.updateTask = async function(event){
 //        window.pjaxOffSetScrollTo = $(event.target).offset();
 //        window.pjaxOffSetScrollTop = (document.documentElement.scrollTop || document.body.scrollTop);
-        $('.by-pass-cache').trigger('click');
+        ZProjectTemplate.clickByPass();
         window.setTimeout(() => {
             alert('update task only supported by premium');
         }, 1);
@@ -167,7 +168,7 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
             'X-CSRF-TOKEN': '<?php echo csrf_token(); ?>'
         };
         let output = await Promise.resolve(jQuery.when($.ajax(ajaxConfig)));
-        $('.by-pass-cache').trigger('click');
+        ZProjectTemplate.clickByPass();
         console.log(output);
     };
     DomainConnect.promiseConfirm = function (customMessage){
@@ -278,6 +279,7 @@ Jira Config: <textarea id="jira_config_json" style="width: 300px; height: 120px"
         this.setConfig(vJson);
     };
     JiraConnect.sendData = function(event){
+        JiraApi.batchInProcess = false;
         let oTimeEntry = jQuery(event.target).data('timeEntry');
 
         //clicked innert <i>
