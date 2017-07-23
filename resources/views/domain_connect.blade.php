@@ -49,6 +49,7 @@ require_once public_path() . '/js/load.js';
     loadjs([
         '/js/common.js?hash=z_hash',
         '/js/jira_api.js?hash=z_hash',
+        '/js/jira_cors.js?hash=z_hash',
         '/js/jira_cache.js?hash=z_hash',
         '/js/object_state.js?hash=z_hash',
         '/js/project_template.js?hash=z_hash',

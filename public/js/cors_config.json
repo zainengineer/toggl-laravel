@@ -1,0 +1,77 @@
+[
+  {
+    "URL": "https://project1.atlassian.net/*",
+    "headers": [
+      {
+        "name": "Access-Control-Allow-Credentials",
+        "value": "true"
+      },
+      {
+        "name": "Access-Control-Allow-Headers",
+        "value": "content-type, X-Atlassian-Token"
+      },
+      {
+        "name": "Access-Control-Allow-Methods",
+        "value": "DELETE"
+      },
+      {
+        "name": "X-Atlassian-Token",
+        "value": "no-check"
+      },
+      {
+        "name": "Access-Control-Allow-Origin",
+        "value": "http://timesheet.local"
+      }
+    ]
+  },
+  {
+    "URL": "https://project2.atlassian.net/*",
+    "headers": [
+      {
+        "name": "Access-Control-Allow-Credentials",
+        "value": "true"
+      },
+      {
+        "name": "Access-Control-Allow-Headers",
+        "value": "content-type, X-Atlassian-Token"
+      },
+      {
+        "name": "Access-Control-Allow-Methods",
+        "value": "DELETE"
+      },
+      {
+        "name": "X-Atlassian-Token",
+        "value": "no-check"
+      },
+      {
+        "name": "Access-Control-Allow-Origin",
+        "value": "http://timesheet.local"
+      }
+    ]
+  },
+  {
+    "URL": "https://project3.atlassian.net/*",
+    "headers": [
+      {
+        "name": "Access-Control-Allow-Credentials",
+        "value": "true"
+      },
+      {
+        "name": "Access-Control-Allow-Headers",
+        "value": "content-type, X-Atlassian-Token"
+      },
+      {
+        "name": "Access-Control-Allow-Methods",
+        "value": "DELETE"
+      },
+      {
+        "name": "X-Atlassian-Token",
+        "value": "no-check"
+      },
+      {
+        "name": "Access-Control-Allow-Origin",
+        "value": "http://timesheet.local"
+      }
+    ]
+  }
+]

@@ -10,9 +10,17 @@ JiraApi.lastProject = false;
 JiraApi.configObject = {};
 JiraApi.unResolvedTickets = 0;
 JiraApi.batchInProcess = false;
+JiraApi.useIframe = false;
 JiraApi.init = function (baseUrl, authKey, sampleTicket,iframeId,iframeUrl) {
-    this.initIframe();
-    this.initialized = true;
+    if (JiraApi.useIframe){
+        this.initIframe();
+        this.initialized = true;
+    }
+    else{
+        JiraApi.initialized = true;
+        JiraCors.init();
+    }
+
 };
 JiraApi.initIframe = function()
 {
@@ -38,9 +46,16 @@ JiraApi.testTicket = function () {
 
        JiraApi.handleRequest = function (project,ticket,config,additional_meta){
     project = this.getProjectFromTicket(ticket, project);
-    let message = JSON.stringify({config:config,
-        meta:{project:project,ticket:ticket,additional_meta:additional_meta}});
-    this.getIframe(project).contentWindow.postMessage(message,'*');
+    let messageObject = {config:config,
+        meta:{project:project,ticket:ticket,additional_meta:additional_meta}};
+    let message = JSON.stringify(messageObject);
+    if (JiraApi.useIframe){
+        this.getIframe(project).contentWindow.postMessage(message,'*');
+    }
+    else{
+        JiraCors.processMessage(messageObject);
+    }
+
     // try {
     //     let output = await Promise.resolve(jQuery.when($.ajax(config)));
     //     // let output = await Promise.resolve(jQuery.when( $.ajax( "/js/common.js" ) ));
