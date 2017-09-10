@@ -10,8 +10,12 @@ class TimeEntries
     protected $oJiraHelper;
     /** @var  Request */
     protected $oRequest;
-
-
+    /** \App\Http\Controllers\TogglController */
+    protected $oTogglController;
+    public function setTogglController(\App\Http\Controllers\TogglController $oToggleController)
+    {
+        $this->oTogglController = $oToggleController;
+    }
     public function __construct(ApiHelper $oHelper
         , Request $oRequest)
     {
@@ -29,6 +33,10 @@ class TimeEntries
     public function getStartDate()
     {
         static $vStartDate;
+        static $isRecursive;
+        if ($isRecursive === true){
+            return false;
+        }
         if ($vStartDate){
             return $vStartDate;
         }
@@ -39,17 +47,36 @@ class TimeEntries
         if ($vStartDate){
             $vStartDate = date('c',strtotime($vStartDate));
         }
+        if (!$vStartDate &&
+                $this->oTogglController){
+            $isRecursive = true;
+            $iStamp = $this->oTogglController->getClosestMondayStamp();
+            $isRecursive = false;
+            $vStartDate = date('c',$iStamp);
+        }
         return $vStartDate;
     }
     public function getEndDate()
     {
         static $vEndDate;
+        static $isRecursive;
+        if ($isRecursive === true){
+            return false;
+        }
         if ($vEndDate){
             return $vEndDate;
         }
         $vEndDate= $this->oRequest->get('end_date');
         if ($vEndDate){
             $vEndDate = date('c',strtotime($vEndDate));
+        }
+        if (!$vEndDate){
+            $isRecursive = true;
+            $iStamp = $this->oTogglController->getClosestSundayStamp();
+            $isRecursive = false;
+            if ($iStamp){
+                $vEndDate = date('c',$iStamp);
+            }
         }
         return $vEndDate;
     }

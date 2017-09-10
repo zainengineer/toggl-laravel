@@ -42,6 +42,7 @@ class TogglController extends Controller
     {
         if (!$this->oTimeHelper) {
             $this->oTimeHelper = resolve('\App\Toggl\TimeEntries');
+            $this->oTimeHelper->setTogglController($this);
         }
         return $this->oTimeHelper;
     }
