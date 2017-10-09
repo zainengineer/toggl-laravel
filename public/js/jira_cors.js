@@ -47,6 +47,7 @@ JiraCors.processMessage = async function (oData) {
     catch (e){
         console.error(e);
         console.error(oData);
+        alert("issue in posting data, remove quote etc from toggl comments")
     }
 
 };

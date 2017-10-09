@@ -134,6 +134,12 @@ JiraApi.postTime = function(project,timeObject){
     /**
      * TODO: investigate why stringify is needed here
      * for some reason jquery ajax in jira creates it into object again
+     *
+     * its a problem with custom post as well. Without jQuery submits [object object] kind of thing
+     * instead of I think submitting json of object etc.
+     * Need a bit investigation but solution is not simplicit
+     *
+     * problem with this approach is quotes etc in post does not work because of escaking
      */
     config.data = JSON.stringify(config.data);
     ZProjectTemplate.setProjectForTicket(project,jiraTicket);
