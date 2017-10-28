@@ -180,6 +180,9 @@ class TimeEntries
         $aParts = explode(' ', $vDescription);
         $aParts = array_map('trim', $aParts);
         $aParts = array_filter($aParts);
+        //re-index keys
+        $aKeys = range(0, count($aParts) - 1);
+        $aParts = array_combine($aKeys, $aParts);
         $aMeta['ticket'] = $aMeta['project'] = strtolower($aParts[0]) ?: 'no_project';
         if (count($aParts) > 2){
             array_splice($aParts,2);
