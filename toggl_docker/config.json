@@ -1,0 +1,16 @@
+{
+  "from": "php:5.6-apache",
+  "ip_map": {
+    "toggldocker_db_1": "docker.toggl-db.dev",
+    "toggldocker_php_1": "timesheet.local",
+    "toggldocker_redis_1": "docker.toggl-redis.dev"
+  },
+  "append": {
+    "lines": [
+      "RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf",
+      "RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf",
+      "RUN apt-get update",
+      "RUN apt-get -y install git zip unzip"
+    ]
+  }
+}
