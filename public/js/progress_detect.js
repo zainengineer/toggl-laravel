@@ -77,7 +77,8 @@ ProgressDetect.resolveAllDates = async () => {
     $entries.each(function (index) {
         let started = $(this).data('started');
         //already value present
-        if (ProgressDetect.resolvedDates.hasOwnProperty(started)){
+        if (ProgressDetect.resolvedDates.hasOwnProperty(started)
+         && ProgressDetect.resolvedDates[started]){
             return true;
         }
         // let comment = $(this).data('comment');
