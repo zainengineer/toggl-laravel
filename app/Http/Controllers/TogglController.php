@@ -395,7 +395,7 @@ class TogglController extends Controller
     public function fixColonAction()
     {
         $oHelper = $this->getTimeEntriesHelper();
-        $aTimeEntries = $oHelper->getTimeEntries();
+        $aTimeEntries = $oHelper->getTimeEntries(date('c',strtotime('10 days ago')),date('c',strtotime('tomorrow')),true);
         $oHelper->fixColon($aTimeEntries);
     }
 }

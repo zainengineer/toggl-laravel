@@ -80,9 +80,17 @@ class TimeEntries
         }
         return $vEndDate;
     }
-    public function getTimeEntries()
+    public function getTimeEntries($vStartDate,$vEndDate,$bDisableCache)
     {
-        return $this->oApiHelper->getTimeEntries($this->getStartDate(),$this->getEndDate());
+        $bCacheStatus = $this->oApiHelper->getCacheStatus();
+        if ($bCacheStatus && $bDisableCache){
+            $this->oApiHelper->setCacheEnable(false);
+        }
+        $aTimeEntries =  $this->oApiHelper->getTimeEntries($vStartDate,$vEndDate);
+        if ($bCacheStatus && $bDisableCache){
+            $this->oApiHelper->setCacheEnable(true);
+        }
+        return $aTimeEntries;
     }
     public function fixColon($aTimeEntries)
     {
@@ -92,15 +100,15 @@ class TimeEntries
             $vDescription = $aEntry['description'];
             $aParts = explode(" ",$vDescription);
             $vTicketNumber = $aParts[0];
+            $vDate = $aEntry['start'];
+            $vDate =date('D-d',strtotime($vDate));
             //no ticket number yet
             if (!strpos($vTicketNumber,'-')){
-                $vDate = $aEntry['start'];
-                $vDate =date('D',strtotime($vDate));
                 $aMissingTicket[] = $vDescription  . ' > ' . $vDate;
                 continue;
             }
             if (!strpos($vTicketNumber,':')){
-                $aMissingColon[] = $vDescription;
+                $aMissingColon[] = $vDescription . ' > ' . $vDate;
                 $aParts[0] = $vTicketNumber . ':';
                 $aUpdatedTask = $aEntry;
 
@@ -110,9 +118,9 @@ class TimeEntries
         }
         $aMissingColon? var_dump($aMissingColon) :var_dump('no missing colon');
         $aMissingTicket ? var_dump($aMissingTicket) :var_dump('no missing ticket number');;
-        $this->oApiHelper->setCacheEnable(false);
-        $this->getTimeEntries();
-        $this->oApiHelper->setCacheEnable(true);
+//        $this->oApiHelper->setCacheEnable(false);
+//        $this->getTimeEntries();
+//        $this->oApiHelper->setCacheEnable(true);
     }
     public function getEntriesByProject()
     {
