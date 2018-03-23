@@ -41,4 +41,19 @@ class ApiHelper
     {
         return $this->oClientProxy->isValidKey();
     }
+    public function updateEntry($aTask)
+    {
+        $iId =$aTask['id'];
+        //not working
+        //$task = $this->oClientProxy->getTask($iId);
+        //not working
+        return $this->oClientProxy->updateTask($iId,$aTask);
+    }
+    public function getCacheStatus()
+    {
+        return $this->oClientProxy->getCacheEnable();
+    }
+    public function setCacheEnable($bStatus){
+        $this->oClientProxy->setEnableCache($bStatus);
+    }
 }

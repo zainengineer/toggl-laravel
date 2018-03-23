@@ -392,4 +392,10 @@ class TogglController extends Controller
 //        $value = Yaml::parse($vYaml);
 //        dd($value);
     }
+    public function fixColonAction()
+    {
+        $oHelper = $this->getTimeEntriesHelper();
+        $aTimeEntries = $oHelper->getTimeEntries();
+        $oHelper->fixColon($aTimeEntries);
+    }
 }

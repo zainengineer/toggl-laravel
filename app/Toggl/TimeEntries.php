@@ -80,7 +80,40 @@ class TimeEntries
         }
         return $vEndDate;
     }
+    public function getTimeEntries()
+    {
+        return $this->oApiHelper->getTimeEntries($this->getStartDate(),$this->getEndDate());
+    }
+    public function fixColon($aTimeEntries)
+    {
+        $aMissingTicket = [];
+        $aMissingColon = [];
+        foreach ($aTimeEntries as $aEntry) {
+            $vDescription = $aEntry['description'];
+            $aParts = explode(" ",$vDescription);
+            $vTicketNumber = $aParts[0];
+            //no ticket number yet
+            if (!strpos($vTicketNumber,'-')){
+                $vDate = $aEntry['start'];
+                $vDate =date('D',strtotime($vDate));
+                $aMissingTicket[] = $vDescription  . ' > ' . $vDate;
+                continue;
+            }
+            if (!strpos($vTicketNumber,':')){
+                $aMissingColon[] = $vDescription;
+                $aParts[0] = $vTicketNumber . ':';
+                $aUpdatedTask = $aEntry;
 
+                $aUpdatedTask['description'] = implode(' ', $aParts);
+//                $this->oApiHelper->updateEntry($aUpdatedTask);
+            }
+        }
+        $aMissingColon? var_dump($aMissingColon) :var_dump('no missing colon');
+        $aMissingTicket ? var_dump($aMissingTicket) :var_dump('no missing ticket number');;
+        $this->oApiHelper->setCacheEnable(false);
+        $this->getTimeEntries();
+        $this->oApiHelper->setCacheEnable(true);
+    }
     public function getEntriesByProject()
     {
         $aTimeEntries = $this->oApiHelper->getTimeEntries($this->getStartDate(),$this->getEndDate());

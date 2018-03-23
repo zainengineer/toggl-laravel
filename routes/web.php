@@ -19,5 +19,6 @@ Route::get('/test', 'TogglController@testActionZ')->name('testing');
 Route::post('/', 'TogglController@entry');
 Route::post('jira', 'TogglController@jiraPost')->name('jiraPost');
 Route::post('togglUpdate', 'TogglController@togglUpdatePost')->name('togglUpdate');
+Route::get('fixColon', 'TogglController@fixColonAction')->name('fixColon');
 
 Route::get('lastWeek', 'TogglController@lastWeek')->name('lastWeekRoute');

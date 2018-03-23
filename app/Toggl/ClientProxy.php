@@ -114,4 +114,12 @@ class ClientProxy
     {
         return $this->oRequest->cookie('toggl_api') ? : @$_ENV['TOGGL_API_KEY'];
     }
+    public function getCacheEnable()
+    {
+        return $this->bEnableCache;
+    }
+    public function setEnableCache($bStatus)
+    {
+        $this->bEnableCache = $bStatus;
+    }
 }
