@@ -96,12 +96,19 @@ class TimeEntries
     {
         $aMissingTicket = [];
         $aMissingColon = [];
+        $timeAgo = new \Westsworld\TimeAgo();
         foreach ($aTimeEntries as $aEntry) {
             $vDescription = $aEntry['description'];
             $aParts = explode(" ",$vDescription);
             $vTicketNumber = $aParts[0];
             $vDate = $aEntry['start'];
-            $vDate =date('D-d',strtotime($vDate));
+            $iDiff = time() - strtotime($vDate);
+            $fDays = $iDiff/ (24 * 60 * 60);
+            $vWeekDay =date('D',strtotime($vDate));
+            if ($fDays >6){
+                $vAgo =  $timeAgo->inWords($vDate);
+                $vDate = "$vWeekDay $vAgo";
+            }
             //no ticket number yet
             if (!strpos($vTicketNumber,'-')){
                 $aMissingTicket[] = $vDescription  . ' > ' . $vDate;
