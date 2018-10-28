@@ -7,7 +7,10 @@ RUN docker-php-ext-install mcrypt soap pdo pdo_mysql mysql mysqli opcache  mbstr
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 RUN docker-php-ext-install -j$(nproc) gd
 RUN a2enmod rewrite ssl headers deflate expires mime
-RUN pecl install xdebug
+#RUN pecl install xdebug
+#RUN apt-get install php-xdebug
+ADD LAMP-docker/util/resources/xdebug-2.5.5.tgz  /xdebug-2.5.5.tgz
+RUN pecl install /xdebug-2.5.5.tgz
 RUN docker-php-ext-enable xdebug
 ADD LAMP-docker/util/resources/xdebug.ini /usr/local/etc/php/conf.d/20-xdebug.ini
 RUN sed -e "s/%XDEBUG_REMOTE_HOST%/`/sbin/ip route|awk '/default/ { print $3 }'`/" \
