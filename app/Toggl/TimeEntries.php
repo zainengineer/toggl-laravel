@@ -123,8 +123,16 @@ class TimeEntries
 //                $this->oApiHelper->updateEntry($aUpdatedTask);
             }
         }
-        $aMissingColon? var_dump($aMissingColon) :var_dump('no missing colon');
-        $aMissingTicket ? var_dump($aMissingTicket) :var_dump('no missing ticket number');;
+        if (!function_exists('d')){
+            function d($var){
+                var_dump($var);
+            }
+        }
+        $aMissingColon? !d($aMissingColon) :!d('no missing colon');
+        $aMissingColon = $aMissingColon ?:'no missing colon';
+        $aMissingTicket = $aMissingTicket?:'no missing ticket number';
+        !d($aMissingTicket);
+        !d($aMissingColon);
 //        $this->oApiHelper->setCacheEnable(false);
 //        $this->getTimeEntries();
 //        $this->oApiHelper->setCacheEnable(true);
